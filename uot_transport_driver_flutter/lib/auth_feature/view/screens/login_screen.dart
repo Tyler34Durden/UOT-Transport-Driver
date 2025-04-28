@@ -5,7 +5,7 @@ import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_butto
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_input.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
-import 'package:uot_transport_driver_flutter/core/core_widgets/back_header.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -94,7 +94,12 @@ class LoginScreen extends StatelessWidget {
               lbl: 'تسجيل الدخول',
               width: screenWidth * 0.4,
               height: screenHeight * 0.07,
-              onPressed: () {},
+              onPressed: () {
+                     Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
             ),
             const Spacer(),
             // AppText(
