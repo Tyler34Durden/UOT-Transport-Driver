@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/screens/trip_details_screen.dart'; // تم الربط مع صفحة تفاصيل الرحلة
 
 class ActiveTripsWidget extends StatelessWidget {
   final String busId;
@@ -24,11 +25,17 @@ class ActiveTripsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(
-        //     builder: (context) => TripDetailsScreen(tripId: tripId,busId: busId, tripState: tripState, firstTripRoute: firstTripRoute, lastTripRoute: lastTripRoute),
-        //   ),
-        // );
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TripDetailsScreen(
+              tripId: tripId,
+              busId: busId,
+              tripState: tripState,
+              firstTripRoute: firstTripRoute,
+              lastTripRoute: lastTripRoute,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -50,8 +57,7 @@ class ActiveTripsWidget extends StatelessWidget {
                   const Text('اسم الحافلة'),
                   const Text("12:00 - 13:00"),
                   Row(
-                            textDirection: TextDirection.rtl,
-
+                    textDirection: TextDirection.rtl,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       const Text('من'),
@@ -70,7 +76,19 @@ class ActiveTripsWidget extends StatelessWidget {
                 const SizedBox(height: 15),
                 AppButton(
                   lbl: "انطلق",
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => TripDetailsScreen(
+                          tripId: tripId,
+                          busId: busId,
+                          tripState: tripState,
+                          firstTripRoute: firstTripRoute,
+                          lastTripRoute: lastTripRoute,
+                        ),
+                      ),
+                    );
+                  },
                   color: AppColors.secondaryColor,
                   textColor: AppColors.primaryColor,
                   width: 92,
