@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/model/repository/driver_auth_repository.dart';
+import 'package:uot_transport_driver_flutter/home_feature/model/repository/active_trips_repository.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/screens/splash_screen.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_cubit.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/active_trips_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +17,20 @@ Future<void> main() async {
         RepositoryProvider<DriverAuthRepository>(
           create: (context) => DriverAuthRepository(),
         ),
+        RepositoryProvider<ActiveTripsRepository>(
+          create: (context) => ActiveTripsRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<DriverAuthCubit>(
             create: (context) => DriverAuthCubit(
               authRepository: context.read<DriverAuthRepository>(),
+            ),
+          ),
+          BlocProvider<ActiveTripsCubit>(
+            create: (context) => ActiveTripsCubit(
+              repository: context.read<ActiveTripsRepository>(),
             ),
           ),
         ],
@@ -36,7 +46,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: GlobalKey<ScaffoldMessengerState>(), // في حال أردت استخدام ScaffoldMessenger
+      scaffoldMessengerKey: GlobalKey<ScaffoldMessengerState>(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Almarai',

@@ -63,7 +63,7 @@ class TripDetailsScreen extends StatelessWidget {
                   lastTripRoute: {},
                 ),
                 const SizedBox(height: 20),
-                // GoogleMapWidget(),
+                GoogleMapWidget(location: '',),
                 const SizedBox(height: 20),
                 AppButton(
                   lbl: 'وصلت المحطة',
