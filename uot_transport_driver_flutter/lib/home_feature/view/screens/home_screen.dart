@@ -1,5 +1,3 @@
-
-
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +14,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // تأكد من استدعاء جلب البيانات عند دخول الشاشة
+    // استدعاء جلب البيانات عند دخول الشاشة
     context.read<ActiveTripsCubit>().fetchTodayTrips();
 
     final screenHeight = MediaQuery.of(context).size.height;
@@ -28,12 +26,12 @@ class HomeScreen extends StatelessWidget {
         child: HomeHeader(),
       ),
       body: Padding(
-        padding:
-            const EdgeInsets.only(top: 80 + 16, left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 75, left: 16, right: 16),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // قسم الرحلات النشطة
               AppText(
                 textAlign: TextAlign.right,
                 lbl: ':رحلات اليوم',
@@ -47,37 +45,45 @@ class HomeScreen extends StatelessWidget {
               BlocBuilder<ActiveTripsCubit, ActiveTripsState>(
                 builder: (context, state) {
                   if (state is ActiveTripsLoading) {
-                    return const Center(
-                        child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (state is ActiveTripsSuccess) {
-                    if (state.trips.isEmpty) {
-                      return const Center(
-                          child: Text('لا توجد رحلات متاحة اليوم.'));
+                    // فلترة الرحلات النشطة لاستبعاد تلك التي حالتها "completed"
+                    final activeTrips = state.trips.where((trip) {
+                      final stateValue =
+                          trip['tripState'].toString().trim().toLowerCase();
+                      return stateValue != 'completed';
+                    }).toList();
+                    if (activeTrips.isEmpty) {
+                      return const Center(child: Text('لا توجد رحلات نشطة متاحة اليوم.'));
                     }
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.trips.length,
+                      itemCount: activeTrips.length,
                       itemBuilder: (context, index) {
-                        final trip = state.trips[index];
-                        return ActiveTripsWidget(
-                          busId: trip['busId'].toString(),
-                          tripId: trip['tripId'].toString(),
-                          tripState: trip['tripState'],
-                          firstTripRoute: trip['firstTripRoute'],
-                          lastTripRoute: trip['lastTripRoute'],
+                        final trip = activeTrips[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: ActiveTripsWidget(
+                            busId: trip['busId'].toString(),
+                            tripId: trip['tripId'].toString(),
+                            tripState: trip['tripState'],
+                            firstTripRoute: trip['firstTripRoute'],
+                            lastTripRoute: trip['lastTripRoute'],
+                          ),
                         );
                       },
                     );
                   } else if (state is ActiveTripsFailure) {
                     return Center(
-                        child: Text(
-                            'حدث خطأ أثناء جلب البيانات: ${state.error}'));
+                      child: Text('حدث خطأ أثناء جلب البيانات: ${state.error}'),
+                    );
                   }
                   return const SizedBox();
                 },
               ),
               SizedBox(height: screenHeight * 0.02),
+              // قسم الرحلات المنتهية
               AppText(
                 textAlign: TextAlign.right,
                 lbl: ':الرحلات المنتهية',
@@ -88,12 +94,45 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: screenHeight * 0.02),
-              InActiveTripsWidget(
-                busId: 'busId',
-                tripId: 'tripId',
-                tripState: 'tripState',
-                firstTripRoute: {'from': 'from', 'to': 'to'},
-                lastTripRoute: {'from': 'from', 'to': 'to'},
+              BlocBuilder<ActiveTripsCubit, ActiveTripsState>(
+                builder: (context, state) {
+                  if (state is ActiveTripsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is ActiveTripsSuccess) {
+                    // فلترة الرحلات المنتهية (المكتملة)
+                    final inactiveTrips = state.trips.where((trip) {
+                      final stateValue =
+                          trip['tripState'].toString().trim().toLowerCase();
+                      return stateValue == 'completed';
+                    }).toList();
+                    if (inactiveTrips.isEmpty) {
+                      return const Center(child: Text('لا توجد رحلات منتهية متاحة اليوم.'));
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: inactiveTrips.length,
+                      itemBuilder: (context, index) {
+                        final trip = inactiveTrips[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: InActiveTripsWidget(
+                            busId: trip['busId'].toString(),
+                            tripId: trip['tripId'].toString(),
+                            tripState: trip['tripState'],
+                            firstTripRoute: trip['firstTripRoute'],
+                            lastTripRoute: trip['lastTripRoute'],
+                          ),
+                        );
+                      },
+                    );
+                  } else if (state is ActiveTripsFailure) {
+                    return Center(
+                      child: Text('حدث خطأ أثناء جلب البيانات: ${state.error}'),
+                    );
+                  }
+                  return const SizedBox();
+                },
               ),
             ],
           ),

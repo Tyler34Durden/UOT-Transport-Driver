@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
 
-
 class AppButton extends StatelessWidget {
   const AppButton({
     required this.lbl,
@@ -30,20 +29,17 @@ class AppButton extends StatelessWidget {
       height: height ?? 57,
       decoration: BoxDecoration(
         color: color ?? AppColors.primaryColor,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(15),
-        ),
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
       ),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min, // يقتصر مساحة الصف على محتوياته
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
@@ -53,12 +49,16 @@ class AppButton extends StatelessWidget {
               ),
               const SizedBox(width: 8),
             ],
-            AppText(
-              lbl: lbl,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: textColor ?? AppColors.accentColor,
+            Flexible(
+              child: AppText(
+                lbl: lbl,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: textColor ?? AppColors.accentColor,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
