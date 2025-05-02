@@ -4,7 +4,7 @@ import 'package:uot_transport_driver_flutter/core/app_colors.dart';
 
 class AppButton extends StatelessWidget {
   const AppButton({
-    required this.lbl,
+     this.lbl,
     required this.onPressed,
     this.height,
     this.width,
@@ -39,15 +39,17 @@ class AppButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min, // يقتصر مساحة الصف على محتوياته
+          // mainAxisSize: MainAxisSize.min, // يقتصر مساحة الصف على محتوياته
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(
                 icon,
                 color: textColor ?? AppColors.accentColor,
+                size: 30,
               ),
-              const SizedBox(width: 8),
+
+              // const SizedBox(width: 8),
             ],
             Flexible(
               child: AppText(
@@ -55,7 +57,7 @@ class AppButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: textColor ?? AppColors.accentColor,
+                  color: textColor ?? AppColors.backgroundColor,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

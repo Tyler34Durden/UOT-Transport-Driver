@@ -69,10 +69,11 @@ class ActiveTripsWidget extends StatelessWidget {
           border: Border.all(color: Colors.grey.shade500),
           borderRadius: BorderRadius.circular(8),
         ),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         child: Row(
           textDirection: TextDirection.rtl,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(width: 5),
             SvgPicture.asset(
@@ -142,7 +143,6 @@ class ActiveTripsWidget extends StatelessWidget {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 15),
                 Flexible(
                   child: AppButton(
                     lbl: displayTripState,
@@ -167,7 +167,6 @@ class ActiveTripsWidget extends StatelessWidget {
                 ),
               ],
             ),
-            // const SizedBox(width: 8),
           ],
         ),
       ),

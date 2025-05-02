@@ -1,16 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/screens/test_dialog_screen.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/active_trips_widget.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/home_header.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/inactive_trips_widget.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/active_trips_cubit.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/active_trips_state.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class MainScreen extends StatelessWidget {
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +56,8 @@ class HomeScreen extends StatelessWidget {
                       return stateValue != 'completed';
                     }).toList();
                     if (activeTrips.isEmpty) {
-                      return const Center(child: Text('لا توجد رحلات نشطة متاحة اليوم.'));
+                      return const Center(
+                          child: Text('لا توجد رحلات نشطة متاحة اليوم.'));
                     }
                     return ListView.builder(
                       shrinkWrap: true,
@@ -106,7 +109,8 @@ class HomeScreen extends StatelessWidget {
                       return stateValue == 'completed';
                     }).toList();
                     if (inactiveTrips.isEmpty) {
-                      return const Center(child: Text('لا توجد رحلات منتهية متاحة اليوم.'));
+                      return const Center(
+                          child: Text('لا توجد رحلات منتهية متاحة اليوم.'));
                     }
                     return ListView.builder(
                       shrinkWrap: true,
@@ -134,6 +138,16 @@ class HomeScreen extends StatelessWidget {
                   return const SizedBox();
                 },
               ),
+              AppButton(
+                  lbl: 'اختبار التنبيه',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TestDialogScreen()),
+                    );
+                  }),
+              SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),

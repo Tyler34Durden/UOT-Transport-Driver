@@ -51,7 +51,7 @@ class InActiveTripsWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: Row(
           textDirection: TextDirection.rtl,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(width: 5),
             SvgPicture.asset(
@@ -100,19 +100,17 @@ class InActiveTripsWidget extends StatelessWidget {
               ),
             ),
             Column(
-              // mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(height: 15),
                    AppText(lbl: '$firstExpectedTime - $lastExpectedTime',
                     style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.textColor,
                     ),
                   ),
-              
+
               ],
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 8),
           ],
         ),
       ),
