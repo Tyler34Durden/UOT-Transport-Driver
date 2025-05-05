@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uot_transport_driver_flutter/auth_feature/view/screens/change_password_scren.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
-import 'package:uot_transport_driver_flutter/home_feature/view/screens/test_dialog_screen.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/active_trips_widget.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/home_header.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/inactive_trips_widget.dart';
@@ -138,16 +138,29 @@ class MainScreen extends StatelessWidget {
                   return const SizedBox();
                 },
               ),
+              SizedBox(height: screenHeight * 0.06),
               AppButton(
-                  lbl: 'اختبار التنبيه',
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TestDialogScreen()),
-                    );
-                  }),
-              SizedBox(height: screenHeight * 0.02),
+                lbl: 'تغيير كلمة المرور',
+                color: AppColors.secondaryColor,
+                textColor: AppColors.primaryColor,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChangePasswordScreen()),
+                  );
+                },
+              ),
+              // AppButton(
+              //     lbl: 'اختبار التنبيه',
+              //     onPressed: () {
+              //       Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => TestDialogScreen()),
+              //       );
+              //     }),
+              // SizedBox(height: screenHeight * 0.2),
             ],
           ),
         ),

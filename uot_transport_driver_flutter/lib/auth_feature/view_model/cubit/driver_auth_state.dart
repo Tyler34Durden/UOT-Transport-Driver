@@ -19,3 +19,9 @@ class DriverAuthFailure extends DriverAuthState {
 
   DriverAuthFailure({required this.error});
 }
+
+// ملف driver_auth_state.dart
+class DriverPasswordChangeSuccess extends DriverAuthState {
+  final Map<String, dynamic> responseData;
+   DriverPasswordChangeSuccess(this.responseData);
+}

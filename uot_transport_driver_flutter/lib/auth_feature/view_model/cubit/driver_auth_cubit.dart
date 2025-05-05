@@ -22,4 +22,14 @@ class DriverAuthCubit extends Cubit<DriverAuthState> {
       emit(DriverAuthFailure(error: e.toString()));
     }
   }
+     // ملف driver_auth_cubit.dart
+    Future<void> changePassword(String token, Map<String, dynamic> passwordData) async {
+      emit(DriverAuthLoading());
+      try {
+        final responseData = await _authRepository.changePassword(token, passwordData);
+        emit(DriverPasswordChangeSuccess(responseData));
+      } catch (e) {
+        emit(DriverAuthFailure(error: e.toString()));
+      }
+    }
 }

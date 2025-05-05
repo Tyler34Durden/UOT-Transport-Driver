@@ -137,22 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: passwordController,
                         ),
                         SizedBox(height: screenHeight * 0.02),
-                        AppText(
-                          lbl: 'هل نسيت كلمة مرورك؟',
-                          style: const TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                          ),
-                          textAlign: TextAlign.right,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChangePasswordScreen()),
-                            );
-                          },
-                        ),
+                       
                         SizedBox(height: screenHeight * 0.06),
                         state is DriverAuthLoading
                             ? const Center(child: CircularProgressIndicator())

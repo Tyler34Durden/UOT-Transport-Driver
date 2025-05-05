@@ -122,8 +122,8 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                 },
               );
             },
-            lbl: ' تأخرت الرحلة',
-            color: AppColors.btnColor,
+           lbl: ' غادرت المحطة',
+            color: Colors.green,
           ),
           AppButton(
             onPressed: () {
@@ -204,8 +204,9 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                 },
               );
             },
-            lbl: ' غادرت المحطة',
-            color: Colors.green,
+             lbl: ' تأخرت الرحلة',
+            color: AppColors.btnColor,
+           
           ),
         ],
       ),
