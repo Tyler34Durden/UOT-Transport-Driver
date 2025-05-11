@@ -29,4 +29,27 @@ class TripDetailsRepository {
       rethrow;
     }
   }
+Future<void> updateTripRouteStatus(int tripRouteID, String newState) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('auth_token') ?? '';
+    final endpoint = 'tripRoutes/$tripRouteID/status/$newState';
+    final response = await _apiService.putRequest(endpoint, {}, token: token);
+    logger.i('TripDetailsRepository: تم تحديث الحالة إلى $newState');
+  } on DioError catch (e) {
+    if (e.response?.statusCode == 409 &&
+        (e.response?.data['message'] ?? '').toString().contains('تم تغيير حالة المحطة بالفعل')) {
+      logger.i('TripDetailsRepository: الحالة محدثة مسبقا');
+      // اعتبار العملية ناجحة وعدم إعادة الخطأ
+      return;
+    }
+    
+    logger.e('TripDetailsRepository: DioError في تحديث الحالة - ${e.message}');
+    rethrow;
+  } catch (e) {
+    logger.e('TripDetailsRepository: خطأ غير متوقع في تحديث الحالة - $e');
+    rethrow;
+  }
+}
+
 }

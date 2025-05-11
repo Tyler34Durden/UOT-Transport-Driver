@@ -1,7 +1,6 @@
-
 //  فيها كود شاشة اختبار الديالوق
-//المربوط ب ديالوق الويدجت العام تحت اسم  
-//? trips_dialog_widget 
+//المربوط ب ديالوق الويدجت العام تحت اسم
+//? trips_dialog_widget
 //!  وصلت المحطة
 //!  غادرت المحطة
 //!  تأخرت الرحلة
@@ -122,7 +121,7 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                 },
               );
             },
-           lbl: ' غادرت المحطة',
+            lbl: ' غادرت المحطة',
             color: Colors.green,
           ),
           AppButton(
@@ -165,9 +164,10 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                           ),
                           SizedBox(width: 10),
                           AppText(
-                           lbl: '00:دقيقة',
-                            style: TextStyle(fontSize: 24 ,fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis, 
+                            lbl: '00:دقيقة',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.ellipsis,
                           ),
                           SizedBox(width: 10),
                           Flexible(
@@ -188,7 +188,6 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                         lbl: 'تأكيد',
                         height: 50,
                         width: 400,
-                        
                       ),
                       SizedBox(height: 10),
                       AppButton(
@@ -204,9 +203,8 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                 },
               );
             },
-             lbl: ' تأخرت الرحلة',
+            lbl: ' تأخرت الرحلة',
             color: AppColors.btnColor,
-           
           ),
         ],
       ),

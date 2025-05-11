@@ -7,7 +7,7 @@
 
 // class ActiveTripsWidget extends StatelessWidget {
 //   final String busId;
-//   final String tripId;
+//   final String tripId; // التأكد من أن هذا النص يمثل رقم الرحلة
 //   final String tripState;
 //   final Map<String, dynamic> firstTripRoute;
 //   final Map<String, dynamic> lastTripRoute;
@@ -52,14 +52,12 @@
 
 //     return GestureDetector(
 //       onTap: () {
+//         // تحويل tripId إلى int؛ إذا كانت القيمة غير قابلة للتحويل سيتم تمرير 0
+//         final int id = int.tryParse(tripId) ?? 0;
 //         Navigator.of(context).push(
 //           MaterialPageRoute(
 //             builder: (context) => TripDetailsScreen(
-//               tripId: tripId,
-//               busId: busId,
-//               tripState: tripState,
-//               firstTripRoute: firstTripRoute,
-//               lastTripRoute: lastTripRoute,
+//               tripId: id,
 //             ),
 //           ),
 //         );
@@ -72,7 +70,6 @@
 //         padding: const EdgeInsets.all(10),
 //         child: Row(
 //           textDirection: TextDirection.rtl,
-//           // crossAxisAlignment: CrossAxisAlignment.start,
 //           mainAxisAlignment: MainAxisAlignment.start,
 //           children: [
 //             const SizedBox(width: 5),
@@ -86,7 +83,6 @@
 //               child: Column(
 //                 crossAxisAlignment: CrossAxisAlignment.end,
 //                 children: [
-//                   // عرض رقم الحافلة
 //                   AppText(
 //                     lbl: 'الحافلة رقم: $busId',
 //                     style: const TextStyle(
@@ -96,7 +92,6 @@
 //                     ),
 //                   ),
 //                   const SizedBox(height: 4),
-
 //                   AppText(
 //                     lbl: '$firstExpectedTime - $lastExpectedTime',
 //                     style: const TextStyle(
@@ -124,7 +119,6 @@
 //                         width: 20,
 //                         height: 20,
 //                       ),
-//                       // const SizedBox(width: 5),
 //                       Flexible(
 //                         child: AppText(
 //                           lbl: lastStation,
@@ -147,14 +141,11 @@
 //                   child: AppButton(
 //                     lbl: displayTripState,
 //                     onPressed: () {
+//                       final int id = int.tryParse(tripId) ?? 0;
 //                       Navigator.of(context).push(
 //                         MaterialPageRoute(
 //                           builder: (context) => TripDetailsScreen(
-//                             tripId: tripId,
-//                             busId: busId,
-//                             tripState: tripState,
-//                             firstTripRoute: firstTripRoute,
-//                             lastTripRoute: lastTripRoute,
+//                             tripId: id,
 //                           ),
 //                         ),
 //                       );
@@ -174,12 +165,12 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
+import 'package:uot_transport_driver_flutter/home_feature/model/repository/trip_details_repository.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/screens/trip_details_screen.dart';
 
 class ActiveTripsWidget extends StatelessWidget {
@@ -228,17 +219,17 @@ class ActiveTripsWidget extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () {
-        // تحويل tripId إلى int؛ إذا كانت القيمة غير قابلة للتحويل سيتم تمرير 0
-        final int id = int.tryParse(tripId) ?? 0;
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => TripDetailsScreen(
-              tripId: id,
-            ),
-          ),
-        );
-      },
+      // onTap: () {
+      //   // الانتقال فقط إذا كانت الحالة active
+      //   final int id = int.tryParse(tripId) ?? 0;
+      //   Navigator.of(context).push(
+      //     MaterialPageRoute(
+      //       builder: (context) => TripDetailsScreen(
+      //         tripId: id,
+      //       ),
+      //     ),
+      //   );
+      // },
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey.shade500),
@@ -314,18 +305,37 @@ class ActiveTripsWidget extends StatelessWidget {
             Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(
+                           Flexible(
                   child: AppButton(
                     lbl: displayTripState,
-                    onPressed: () {
-                      final int id = int.tryParse(tripId) ?? 0;
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => TripDetailsScreen(
-                            tripId: id,
+                    onPressed: () async {
+                      if (tripState == 'soon') {
+                        // نفترض أنّ بيانات المحطة الأولى تحتوي على مُعرّف المسار
+                        final int routeId = firstTripRoute['id'] ?? 0;
+                        if (routeId != 0) {
+                          try {
+                            await TripDetailsRepository().updateTripRouteStatus(routeId, 'Reached');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('تم تحديث الحالة إلى Reached')),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('فشل تحديث الحالة')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('بيانات المحطة غير متوفرة')),
+                          );
+                        }
+                      } else if (tripState == 'active') {
+                        final int id = int.tryParse(tripId) ?? 0;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => TripDetailsScreen(tripId: id),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     color: buttonColor,
                     textColor: buttonTextColor,
