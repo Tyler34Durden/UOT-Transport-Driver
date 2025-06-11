@@ -28,7 +28,6 @@
 //     final String firstStation = firstTripRoute['stationName'] ?? 'xx';
 //     final String lastStation = lastTripRoute['stationName'] ?? 'yy';
 
-
 //     return GestureDetector(
 //       onTap: () {
 //         Navigator.of(context).push(
@@ -118,7 +117,6 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
@@ -195,11 +193,14 @@ class InActiveTripsWidget extends StatelessWidget {
                   Row(
                     textDirection: TextDirection.rtl,
                     children: [
-                      AppText(
-                        lbl: firstStation,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
+                      Flexible(
+                        child: AppText(
+                          lbl: firstStation,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textColor,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       const SizedBox(width: 5),
@@ -209,12 +210,16 @@ class InActiveTripsWidget extends StatelessWidget {
                         height: 20,
                       ),
                       const SizedBox(width: 5),
-                      AppText(
-                        lbl: lastStation,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: AppColors.textColor,
+                      Flexible(
+                        child: AppText(
+                          lbl: lastStation,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textColor,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
+                   
                       ),
                     ],
                   ),

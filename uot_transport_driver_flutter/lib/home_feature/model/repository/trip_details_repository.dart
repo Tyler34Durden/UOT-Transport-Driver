@@ -29,6 +29,7 @@ class TripDetailsRepository {
       rethrow;
     }
   }
+  
 Future<void> updateTripRouteStatus(int tripRouteID, String newState) async {
   try {
     final prefs = await SharedPreferences.getInstance();

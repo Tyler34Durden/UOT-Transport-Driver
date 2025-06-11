@@ -48,9 +48,12 @@
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uot_transport_driver_flutter/auth_feature/view/screens/profie_screen.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
+import 'package:uot_transport_driver_flutter/core/app_icons.dart';
 
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
@@ -83,24 +86,37 @@ class HomeHeader extends StatelessWidget {
           textDirection: TextDirection.rtl,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            FutureBuilder<String>(
-              future: _getUserFullName(),
-              builder: (context, snapshot) {
-                final fullName = snapshot.hasData ? snapshot.data! : '';
-                return AppText(
-                  lbl: '$fullName ، مرحبًا ',
-                  style: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
             Image(
               image: AssetImage('assets/images/logo-02-svg 1.png'),
-            
             ),
+
+            IconButton(
+             icon: SvgPicture.asset(AppIcons.settings,
+                width: 28, height: 28, color: AppColors.primaryColor),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DriverProfile()),
+              );
+            },
+            ),
+
+
+            // FutureBuilder<String>(
+            //   future: _getUserFullName(),
+            //   builder: (context, snapshot) {
+            //     final fullName = snapshot.hasData ? snapshot.data! : '';
+            //     return AppText(
+            //       lbl: '$fullName ، مرحبًا ',
+            //       style: const TextStyle(
+            //         color: AppColors.primaryColor,
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold,
+            //       ),
+            //     );
+            //   },
+            // ),
           ],
         ),
       ),
