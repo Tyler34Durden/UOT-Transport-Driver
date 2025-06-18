@@ -1,9 +1,11 @@
 buildscript {
+    ext.kotlin_version = '2.1.0' // ✅ أضف هذا السطر
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // ✅ أضف هذا السطر
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath 'com.google.gms:google-services:4.3.15'
     }
@@ -27,3 +29,4 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
+   

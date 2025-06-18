@@ -94,7 +94,7 @@ class _TestDialogScreenState extends State<TestDialogScreen> {
                     ),
                     content: AppText(
                       lbl:
-                          'سوف تقوم بمغادرة المحطة  والإنطلاق للمحطة القادمة: الفرناج.',
+                          'سوف تقوم بمغادرة المحطة والإنطلاق للمحطة القادمة: الفرناج.',
                       style: TextStyle(
                         fontSize: 14,
                         color: AppColors.textColor,
