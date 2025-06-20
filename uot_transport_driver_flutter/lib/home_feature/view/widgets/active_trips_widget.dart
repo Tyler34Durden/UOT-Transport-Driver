@@ -1,359 +1,3 @@
-// // import 'package:flutter/material.dart';
-// // import 'package:flutter_svg/flutter_svg.dart';
-// // import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
-// // import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
-// // import 'package:uot_transport_driver_flutter/core/app_colors.dart';
-// // import 'package:uot_transport_driver_flutter/home_feature/view/screens/trip_details_screen.dart';
-
-// // class ActiveTripsWidget extends StatelessWidget {
-// //   final String busId;
-// //   final String tripId; // التأكد من أن هذا النص يمثل رقم الرحلة
-// //   final String tripState;
-// //   final Map<String, dynamic> firstTripRoute;
-// //   final Map<String, dynamic> lastTripRoute;
-
-// //   const ActiveTripsWidget({
-// //     Key? key,
-// //     required this.busId,
-// //     required this.tripId,
-// //     required this.tripState,
-// //     required this.firstTripRoute,
-// //     required this.lastTripRoute,
-// //   }) : super(key: key);
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     // استخراج البيانات من الخرائط
-// //     final String firstExpectedTime = firstTripRoute['expectedTime'] ?? '11';
-// //     final String lastExpectedTime = lastTripRoute['expectedTime'] ?? '00';
-// //     final String firstStation = firstTripRoute['stationName'] ?? 'xx';
-// //     final String lastStation = lastTripRoute['stationName'] ?? 'yy';
-
-// //     // تحويل الحالة لنص العرض
-// //     final String displayTripState = tripState == 'soon'
-// //         ? 'قيد الانتظار'
-// //         : tripState == 'active'
-// //             ? 'انطلق'
-// //             : tripState;
-
-// //     // تحديد لون الزر بناءً على الحالة
-// //     final Color buttonColor;
-// //     final Color buttonTextColor;
-// //     if (tripState == 'soon') {
-// //       buttonColor = Colors.grey[600]!;
-// //       buttonTextColor = Colors.white;
-// //     } else if (tripState == 'active') {
-// //       buttonColor = Colors.green;
-// //       buttonTextColor = Colors.white;
-// //     } else {
-// //       buttonColor = AppColors.secondaryColor;
-// //       buttonTextColor = AppColors.primaryColor;
-// //     }
-
-// //     return GestureDetector(
-// //       onTap: () {
-// //         // تحويل tripId إلى int؛ إذا كانت القيمة غير قابلة للتحويل سيتم تمرير 0
-// //         final int id = int.tryParse(tripId) ?? 0;
-// //         Navigator.of(context).push(
-// //           MaterialPageRoute(
-// //             builder: (context) => TripDetailsScreen(
-// //               tripId: id,
-// //             ),
-// //           ),
-// //         );
-// //       },
-// //       child: Container(
-// //         decoration: BoxDecoration(
-// //           border: Border.all(color: Colors.grey.shade500),
-// //           borderRadius: BorderRadius.circular(8),
-// //         ),
-// //         padding: const EdgeInsets.all(10),
-// //         child: Row(
-// //           textDirection: TextDirection.rtl,
-// //           mainAxisAlignment: MainAxisAlignment.start,
-// //           children: [
-// //             const SizedBox(width: 5),
-// //             SvgPicture.asset(
-// //               'assets/icons/bus.svg',
-// //               width: 40,
-// //               height: 40,
-// //             ),
-// //             const SizedBox(width: 20),
-// //             Expanded(
-// //               child: Column(
-// //                 crossAxisAlignment: CrossAxisAlignment.end,
-// //                 children: [
-// //                   AppText(
-// //                     lbl: 'الحافلة رقم: $busId',
-// //                     style: const TextStyle(
-// //                       fontSize: 18,
-// //                       color: AppColors.textColor,
-// //                       fontWeight: FontWeight.bold,
-// //                     ),
-// //                   ),
-// //                   const SizedBox(height: 4),
-// //                   AppText(
-// //                     lbl: '$firstExpectedTime - $lastExpectedTime',
-// //                     style: const TextStyle(
-// //                       fontSize: 16,
-// //                       color: AppColors.textColor,
-// //                     ),
-// //                   ),
-// //                   const SizedBox(height: 4),
-// //                   Row(
-// //                     textDirection: TextDirection.rtl,
-// //                     children: [
-// //                       Flexible(
-// //                         child: AppText(
-// //                           lbl: firstStation,
-// //                           style: const TextStyle(
-// //                             fontSize: 14,
-// //                             color: AppColors.textColor,
-// //                           ),
-// //                           overflow: TextOverflow.ellipsis,
-// //                         ),
-// //                       ),
-// //                       const SizedBox(width: 5),
-// //                       SvgPicture.asset(
-// //                         'assets/icons/arrow-right-circle.svg',
-// //                         width: 20,
-// //                         height: 20,
-// //                       ),
-// //                       Flexible(
-// //                         child: AppText(
-// //                           lbl: lastStation,
-// //                           style: const TextStyle(
-// //                             fontSize: 14,
-// //                             color: AppColors.textColor,
-// //                           ),
-// //                           overflow: TextOverflow.ellipsis,
-// //                         ),
-// //                       ),
-// //                     ],
-// //                   ),
-// //                 ],
-// //               ),
-// //             ),
-// //             Column(
-// //               mainAxisSize: MainAxisSize.min,
-// //               children: [
-// //                 Flexible(
-// //                   child: AppButton(
-// //                     lbl: displayTripState,
-// //                     onPressed: () {
-// //                       final int id = int.tryParse(tripId) ?? 0;
-// //                       Navigator.of(context).push(
-// //                         MaterialPageRoute(
-// //                           builder: (context) => TripDetailsScreen(
-// //                             tripId: id,
-// //                           ),
-// //                         ),
-// //                       );
-// //                     },
-// //                     color: buttonColor,
-// //                     textColor: buttonTextColor,
-// //                     width: 117.5,
-// //                     height: 36,
-// //                   ),
-// //                 ),
-// //               ],
-// //             ),
-// //           ],
-// //         ),
-// //       ),
-// //     );
-// //   }
-// // }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
-// import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
-// import 'package:uot_transport_driver_flutter/core/app_colors.dart';
-// import 'package:uot_transport_driver_flutter/home_feature/model/repository/trip_details_repository.dart';
-// import 'package:uot_transport_driver_flutter/home_feature/view/screens/trip_details_screen.dart';
-
-// class ActiveTripsWidget extends StatelessWidget {
-//   final String busId;
-//   final String tripId; // التأكد من أن هذا النص يمثل رقم الرحلة
-//   final String tripState;
-//   final Map<String, dynamic> firstTripRoute;
-//   final Map<String, dynamic> lastTripRoute;
-
-//   const ActiveTripsWidget({
-//     Key? key,
-//     required this.busId,
-//     required this.tripId,
-//     required this.tripState,
-//     required this.firstTripRoute,
-//     required this.lastTripRoute,
-//   }) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // استخراج البيانات من الخرائط
-//     final String firstExpectedTime = firstTripRoute['expectedTime'] ?? '11';
-//     final String lastExpectedTime = lastTripRoute['expectedTime'] ?? '00';
-//     final String firstStation = firstTripRoute['stationName'] ?? 'xx';
-//     final String lastStation = lastTripRoute['stationName'] ?? 'yy';
-
-//     // تحويل الحالة لنص العرض
-//     final String displayTripState = tripState == 'soon'
-//         ? 'قيد الانتظار'
-//         : tripState == 'active'
-//             ? 'انطلق'
-//             : tripState;
-
-//     // تحديد لون الزر بناءً على الحالة
-//     final Color buttonColor;
-//     final Color buttonTextColor;
-//     if (tripState == 'soon') {
-//       buttonColor = Colors.grey[600]!;
-//       buttonTextColor = Colors.white;
-//     } else if (tripState == 'active') {
-//       buttonColor = Colors.green;
-//       buttonTextColor = Colors.white;
-//     } else {
-//       buttonColor = AppColors.secondaryColor;
-//       buttonTextColor = AppColors.primaryColor;
-//     }
-
-//     return GestureDetector(
-//       // onTap: () {
-//       //   // الانتقال فقط إذا كانت الحالة active
-//       //   final int id = int.tryParse(tripId) ?? 0;
-//       //   Navigator.of(context).push(
-//       //     MaterialPageRoute(
-//       //       builder: (context) => TripDetailsScreen(
-//       //         tripId: id,
-//       //       ),
-//       //     ),
-//       //   );
-//       // },
-//       child: Container(
-//         decoration: BoxDecoration(
-//           border: Border.all(color: Colors.grey.shade500),
-//           borderRadius: BorderRadius.circular(8),
-//         ),
-//         padding: const EdgeInsets.all(10),
-//         child: Row(
-//           textDirection: TextDirection.rtl,
-//           mainAxisAlignment: MainAxisAlignment.start,
-//           children: [
-//             const SizedBox(width: 5),
-//             SvgPicture.asset(
-//               'assets/icons/bus.svg',
-//               width: 40,
-//               height: 40,
-//             ),
-//             const SizedBox(width: 20),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.end,
-//                 children: [
-//                   AppText(
-//                     lbl: 'الحافلة رقم: $busId',
-//                     style: const TextStyle(
-//                       fontSize: 18,
-//                       color: AppColors.textColor,
-//                       fontWeight: FontWeight.bold,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 4),
-//                   AppText(
-//                     lbl: '$firstExpectedTime - $lastExpectedTime',
-//                     style: const TextStyle(
-//                       fontSize: 16,
-//                       color: AppColors.textColor,
-//                     ),
-//                   ),
-//                   const SizedBox(height: 4),
-//                   Row(
-//                     textDirection: TextDirection.rtl,
-//                     children: [
-//                       Flexible(
-//                         child: AppText(
-//                           lbl: firstStation,
-//                           style: const TextStyle(
-//                             fontSize: 14,
-//                             color: AppColors.textColor,
-//                           ),
-//                           overflow: TextOverflow.ellipsis,
-//                         ),
-//                       ),
-//                       const SizedBox(width: 5),
-//                       SvgPicture.asset(
-//                         'assets/icons/arrow-right-circle.svg',
-//                         width: 20,
-//                         height: 20,
-//                       ),
-//                       Flexible(
-//                         child: AppText(
-//                           lbl: lastStation,
-//                           style: const TextStyle(
-//                             fontSize: 14,
-//                             color: AppColors.textColor,
-//                           ),
-//                           overflow: TextOverflow.ellipsis,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             Column(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                            Flexible(
-//                   child: AppButton(
-//                     lbl: displayTripState,
-//                     onPressed: () async {
-//                       if (tripState == 'soon') {
-//                         // نفترض أنّ بيانات المحطة الأولى تحتوي على مُعرّف المسار
-//                         final int routeId = firstTripRoute['id'] ?? 0;
-//                         if (routeId != 0) {
-//                           try {
-//                             await TripDetailsRepository().updateTripRouteStatus(routeId, 'Reached');
-//                             ScaffoldMessenger.of(context).showSnackBar(
-//                               const SnackBar(content: Text('تم تحديث الحالة إلى Reached')),
-//                             );
-//                           } catch (e) {
-//                             ScaffoldMessenger.of(context).showSnackBar(
-//                               const SnackBar(content: Text('فشل تحديث الحالة')),
-//                             );
-//                           }
-//                         } else {
-//                           ScaffoldMessenger.of(context).showSnackBar(
-//                             const SnackBar(content: Text('بيانات المحطة غير متوفرة')),
-//                           );
-//                         }
-//                       } else if (tripState == 'active') {
-//                         final int id = int.tryParse(tripId) ?? 0;
-//                         Navigator.of(context).push(
-//                           MaterialPageRoute(
-//                             builder: (context) => TripDetailsScreen(tripId: id),
-//                           ),
-//                         );
-//                       }
-//                     },
-//                     color: buttonColor,
-//                     textColor: buttonTextColor,
-//                     width: 117.5,
-//                     height: 36,
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
@@ -361,6 +5,7 @@ import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
 import 'package:uot_transport_driver_flutter/home_feature/model/repository/trip_details_repository.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/screens/trip_details_screen.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/widgets/trips_dialog_widget.dart';
 
 class ActiveTripsWidget extends StatefulWidget {
   final String busId;
@@ -370,13 +15,13 @@ class ActiveTripsWidget extends StatefulWidget {
   final Map<String, dynamic> lastTripRoute;
 
   const ActiveTripsWidget({
-    Key? key,
+    super.key,
     required this.busId,
     required this.tripId,
     required this.tripState,
     required this.firstTripRoute,
     required this.lastTripRoute,
-  }) : super(key: key);
+  });
 
   @override
   _ActiveTripsWidgetState createState() => _ActiveTripsWidgetState();
@@ -406,7 +51,7 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
     final String displayState = _currentTripState == 'soon'
         ? 'قيد الانتظار'
         : _currentTripState == 'active'
-            ? 'انطلق'
+            ? 'نشطة'
             : _currentTripState;
     final Color btnColor = _currentTripState == 'soon'
         ? Colors.grey[600]!
@@ -417,7 +62,7 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade500),
+        border: Border.all(color: AppColors.primaryColor, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
       padding: const EdgeInsets.all(10),
@@ -425,7 +70,7 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
         textDirection: TextDirection.rtl,
         children: [
           SvgPicture.asset('assets/icons/bus.svg', width: 40, height: 40),
-          const SizedBox(width: 20),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -454,13 +99,13 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 2),
                     SvgPicture.asset(
                       'assets/icons/arrow-right-circle.svg',
                       width: 20,
                       height: 20,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 2),
                     Flexible(
                       child: AppText(
                         lbl: lastStation,
@@ -480,37 +125,102 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
             textColor: txtColor,
             width: 117.5,
             height: 36,
+            // onPressed: () async {
+            //   // عند الضغط على "قيد الانتظار" نجري تحديث الحالة أولاً ثم نعيد بناء الواجهة
+            //   if (_currentTripState == 'soon') {
+            //     final int routeId = widget.firstTripRoute['id'] ?? 0;
+            //     if (routeId != 0) {
+            //       try {
+            //         await TripDetailsRepository()
+            //             .updateTripRouteStatus(routeId, 'Reached');
+            //         // مباشرةً عدّل الحالة محلياً
+            //         setState(() {
+            //           _currentTripState = 'active';
+            //         });
+                    
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           const SnackBar(content: Text('تم تحديث الحالة إلى انطلق')),
+            //         );
+            //       } catch (_) {
+            //         ScaffoldMessenger.of(context).showSnackBar(
+            //           const SnackBar(content: Text('فشل تحديث الحالة')),
+            //         );
+            //       }
+            //     }
+            //   }
+            //   // عند الضغط على "انطلق" ننقل المستخدم إلى شاشة التفاصيل
+            //   else if (_currentTripState == 'active') {
+            //     final int id = int.tryParse(widget.tripId) ?? 0;
+            //     Navigator.of(context).push(
+            //       MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
+            //     );
+            //   }
+            // },
             onPressed: () async {
-              // عند الضغط على "قيد الانتظار" نجري تحديث الحالة أولاً ثم نعيد بناء الواجهة
-              if (_currentTripState == 'soon') {
-                final int routeId = widget.firstTripRoute['id'] ?? 0;
-                if (routeId != 0) {
-                  try {
-                    await TripDetailsRepository()
-                        .updateTripRouteStatus(routeId, 'Reached');
-                    // مباشرةً عدّل الحالة محلياً
-                    setState(() {
-                      _currentTripState = 'active';
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('تم تحديث الحالة إلى انطلق')),
-                    );
-                  } catch (_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('فشل تحديث الحالة')),
-                    );
-                  }
-                }
-              }
-              // عند الضغط على "انطلق" ننقل المستخدم إلى شاشة التفاصيل
-              else if (_currentTripState == 'active') {
-                final int id = int.tryParse(widget.tripId) ?? 0;
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
-                );
-              }
-            },
-          ),
+        if (_currentTripState == 'soon') {
+          final int routeId = widget.firstTripRoute['id'] ?? 0;
+          if (routeId != 0) {
+            try {
+              // حدِّث الحالة على السيرفر
+              await TripDetailsRepository()
+                  .updateTripRouteStatus(routeId, 'Reached');
+              // عدِّل الحالة محلياً
+              setState(() {
+                _currentTripState = 'active';
+              });
+              // عرض حوار النجاح
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) => TripsDialog(
+                  title: SvgPicture.asset("assets/icons/check.svg"),
+                  content: const AppText(
+                    lbl: 'تم تحديث الحالة إلى نشطة.',
+                    style: TextStyle(fontSize: 20, color: AppColors.textColor),
+                  ),
+                ),
+              );
+              // انتظر ثم اغلق الحوار
+              await Future.delayed(const Duration(seconds: 2));
+              Navigator.pop(context);
+            } catch (_) {
+              // عرض حوار الخطأ
+              showDialog(
+                context: context,
+                builder: (_) => TripsDialog(
+                  title: const AppText(
+                    lbl: 'فشل العملية',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  content: const AppText(
+                    lbl: 'لم نتمكن من تحديث الحالة، حاول مرة أخرى.',
+                    style: TextStyle(fontSize: 16, color: AppColors.textColor),
+                  ),
+                  actions: [
+                    AppButton(
+                      lbl: 'حسناً',
+                      onPressed: () => Navigator.pop(context),
+                      height: 50,
+                      width: 200,
+                   ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+    else if (_currentTripState == 'active') {
+      final int id = int.tryParse(widget.tripId) ?? 0;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
+      );
+    }
+  },
+),
         ],
       ),
     );

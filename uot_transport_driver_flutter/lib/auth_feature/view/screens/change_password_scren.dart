@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_cubit.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_state.dart';
@@ -9,6 +10,7 @@ import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.
 import 'package:uot_transport_driver_flutter/core/core_widgets/back_header.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
 import 'package:uot_transport_driver_flutter/core/response_dialog.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/widgets/trips_dialog_widget.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -50,9 +52,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     };
 
     // استدعاء الدالة من الـ Cubit
-    context
-        .read<DriverAuthCubit>()
-        .changePassword(_token, passwordData);
+    context.read<DriverAuthCubit>().changePassword(_token, passwordData);
   }
 
   @override
@@ -67,18 +67,55 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return BlocListener<DriverAuthCubit, DriverAuthState>(
       listener: (context, state) {
         if (state is DriverPasswordChangeSuccess) {
-          showResponseDialog(
-            context,
-            success: true,
-            message: state.responseData['message'] ??
-                'تم تغيير كلمة المرور بنجاح',
+          // عرض ديالوج النجاح
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => TripsDialog(
+              title: SvgPicture.asset("assets/icons/check.svg"),
+              content: AppText(
+                textAlign: TextAlign.center,
+                lbl: state.responseData['message'] ??
+                    'تم تغيير كلمة المرور بنجاح',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.textColor,
+                ),
+              ),
+            ),
           );
-          // يمكنك إغلاق الشاشة أو عمل عملية أخرى هنا
+          // اغلاق الديالوج بعد ثانيتين
+          Future.delayed(const Duration(seconds: 2))
+              .then((_) => Navigator.of(context).pop());
         } else if (state is DriverAuthFailure) {
-          showResponseDialog(
-            context,
-            success: false,
-            message: 'فشل تغيير كلمة المرور: ${state.error}',
+          // عرض ديالوج الخطأ
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => TripsDialog(
+              title: Icon(
+                Icons.error_outline,
+                color: AppColors.btnColor,
+                size: 50,
+              ),
+              content: AppText(
+                lbl: state.error,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textColor,
+                ),
+              ),
+              actions: [
+                Center(
+                  child: AppButton(
+                    lbl: 'حسناً',
+                    onPressed: () => Navigator.of(context).pop(),
+                    height: 50,
+                    width: 100,
+                  ),
+                ),
+              ],
+            ),
           );
         }
       },
@@ -92,7 +129,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: screenHeight * 0.04),
+                SizedBox(height: screenHeight * 0.02),
                 const Center(
                   child: AppText(
                     lbl: 'تغيير كلمة المرور',

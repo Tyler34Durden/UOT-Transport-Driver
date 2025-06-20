@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_input.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
@@ -8,6 +9,7 @@ import 'package:uot_transport_driver_flutter/core/app_colors.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/screens/main_screen.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_cubit.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_state.dart';
+import 'package:uot_transport_driver_flutter/home_feature/view/widgets/trips_dialog_widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +21,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController phoneController;
   late TextEditingController passwordController;
-  // متغير لتبديل إخفاء/إظهار كلمة المرور
   bool obscurePassword = true;
 
   @override
@@ -36,26 +37,84 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => TripsDialog(
+        title: Icon(
+          Icons.error_outline,
+          color: AppColors.btnColor,
+          size: 50,
+        ),
+        content: AppText(
+          textAlign: TextAlign.center,
+          lbl: message,
+          style: const TextStyle(
+            fontSize: 16,
+            color: AppColors.textColor,
+          ),
+        ),
+        actions: [
+          Center(
+            child: AppButton(
+              lbl: 'حسناً',
+              onPressed: () => Navigator.of(context).pop(),
+              height: 50,
+              width: 100,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // الحصول على مقاسات الشاشة
     final screenHeight = MediaQuery.of(context).size.height;
     return BlocConsumer<DriverAuthCubit, DriverAuthState>(
+      listenWhen: (previous, current) {
+        final isSuccess =
+            previous is DriverAuthLoading && current is DriverAuthSuccess;
+        final isFailure =
+            previous is DriverAuthLoading && current is DriverAuthFailure;
+        return isSuccess || isFailure;
+      },
       listener: (context, state) {
         if (state is DriverAuthSuccess) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => TripsDialog(
+              title: SvgPicture.asset("assets/icons/check.svg",
+                  height: 80, width: 80),
+              content: AppText(
+                textAlign: TextAlign.center,
+                lbl: 'تم تسجيل الدخول بنجاح',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: AppColors.textColor,
+                ),
+              ),
+            ),
           );
+          // اغلاق الديالوج بعد ثانيتين
+          Future.delayed(const Duration(seconds: 2))
+              .then((_) => Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const MainScreen(),
+                    ),
+                  ));
         } else if (state is DriverAuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error)),
-          );
+          showErrorDialog(state.error);
         }
       },
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.backgroundColor,
+          
           body: SafeArea(
             child: SingleChildScrollView(
               child: ConstrainedBox(
@@ -136,7 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           controller: passwordController,
                         ),
                         SizedBox(height: screenHeight * 0.02),
-                       
                         SizedBox(height: screenHeight * 0.06),
                         state is DriverAuthLoading
                             ? const Center(child: CircularProgressIndicator())
@@ -144,10 +202,50 @@ class _LoginScreenState extends State<LoginScreen> {
                                 lbl: 'تسجيل الدخول',
                                 width: MediaQuery.of(context).size.width * 0.4,
                                 height: screenHeight * 0.07,
+                                //   onPressed: () {
+                                //     context.read<DriverAuthCubit>().login({
+                                //       "phone": phoneController.text,
+                                //       "password": passwordController.text,
+                                //     });
+                                //   },
+                                // ),
                                 onPressed: () {
+                                  final phone = phoneController.text.trim();
+                                  final password = passwordController.text;
+
+                                  if (phone.isEmpty && phone.isEmpty) {
+                                    showErrorDialog(' الرجاء إدخال رقم الهاتف و كلمة المرور');
+                                    return;
+                                  }
+                                  if (phone.isEmpty) {
+                                    showErrorDialog('الرجاء إدخال رقم الهاتف');
+                                    return;
+                                  }
+                                  if (phone.length < 10) {
+                                    showErrorDialog(
+                                        'يجب أن يكون رقم الهاتف 10 أرقام على الأقل');
+                                    return;
+                                  }
+                                  // مثال للتحقق من صيغة رقم الهاتف (10 أرقام أو أكثر)
+                                  final phoneRegex = RegExp(r'^[0-9]{10,}$');
+                                  if (!phoneRegex.hasMatch(phone)) {
+                                    showErrorDialog(
+                                        'تنسيق رقم الهاتف غير صحيح');
+                                    return;
+                                  }
+                                  if (password.isEmpty) {
+                                    showErrorDialog('الرجاء إدخال كلمة المرور');
+                                    return;
+                                  }
+                                  if (password.length < 6) {
+                                    showErrorDialog(
+                                        'يجب أن تكون كلمة المرور 6 أحرف على الأقل');
+                                    return;
+                                  }
+                                  // إذا مرّ كل شيء بنجاح، ننادي الـ cubit
                                   context.read<DriverAuthCubit>().login({
-                                    "phone": phoneController.text,
-                                    "password": passwordController.text,
+                                    "phone": phone,
+                                    "password": password,
                                   });
                                 },
                               ),

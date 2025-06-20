@@ -193,13 +193,13 @@ class MainScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(56),
-        child: HomeHeader(),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 75, left: 16, right: 16),
+          backgroundColor: AppColors.backgroundColor,
+          appBar: const PreferredSize(
+            preferredSize: Size.fromHeight(56),
+            child: HomeHeader(),
+          ),
+          body: Padding(
+        padding: const EdgeInsets.only(top: 24, left: 16, right: 16),
         child: RefreshIndicator(
           onRefresh: () async {
             context.read<ActiveTripsCubit>().fetchTodayTrips();
@@ -265,7 +265,6 @@ class MainScreen extends StatelessWidget {
                     return const SizedBox();
                   },
                 ),
-                SizedBox(height: screenHeight * 0.02),
                 // قسم الرحلات المنتهية
                 AppText(
                   textAlign: TextAlign.right,

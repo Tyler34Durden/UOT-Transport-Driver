@@ -53,4 +53,22 @@ Future<void> updateTripRouteStatus(int tripRouteID, String newState) async {
   }
 }
 
+ Future<void> addDelay(int tripRouteID, int minutes) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token') ?? '';
+      final endpoint = 'tripRoute/$tripRouteID/addDelay/$minutes';
+      await _apiService.putRequest(endpoint, {}, token: token);
+      logger.i(
+        'TripDetailsRepository: تم إضافة تأخير $minutes دقيقه إلى المسار $tripRouteID',
+      );
+    } on DioError catch (e) {
+      logger.e('TripDetailsRepository: DioError في إضافة التأخير - ${e.message}');
+      rethrow;
+    } catch (e) {
+      logger.e('TripDetailsRepository: خطأ غير متوقع في إضافة التأخير - $e');
+      rethrow;
+    }
+  }
+
 }
