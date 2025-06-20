@@ -75,11 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     return BlocConsumer<DriverAuthCubit, DriverAuthState>(
       listenWhen: (previous, current) {
-        final isSuccess =
+        final isLoginSuccess =
             previous is DriverAuthLoading && current is DriverAuthSuccess;
-        final isFailure =
+        final isLoginFailure =
             previous is DriverAuthLoading && current is DriverAuthFailure;
-        return isSuccess || isFailure;
+        return isLoginSuccess || isLoginFailure;
       },
       listener: (context, state) {
         if (state is DriverAuthSuccess) {
@@ -114,7 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.backgroundColor,
-          
           body: SafeArea(
             child: SingleChildScrollView(
               child: ConstrainedBox(
@@ -214,19 +213,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   final password = passwordController.text;
 
                                   if (phone.isEmpty && phone.isEmpty) {
-                                    showErrorDialog(' الرجاء إدخال رقم الهاتف و كلمة المرور');
+                                    showErrorDialog(
+                                        ' الرجاء إدخال رقم الهاتف و كلمة المرور');
                                     return;
                                   }
                                   if (phone.isEmpty) {
                                     showErrorDialog('الرجاء إدخال رقم الهاتف');
                                     return;
                                   }
-                                  if (phone.length < 10) {
-                                    showErrorDialog(
-                                        'يجب أن يكون رقم الهاتف 10 أرقام على الأقل');
-                                    return;
-                                  }
-                                  // مثال للتحقق من صيغة رقم الهاتف (10 أرقام أو أكثر)
                                   final phoneRegex = RegExp(r'^[0-9]{10,}$');
                                   if (!phoneRegex.hasMatch(phone)) {
                                     showErrorDialog(
@@ -235,11 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                   if (password.isEmpty) {
                                     showErrorDialog('الرجاء إدخال كلمة المرور');
-                                    return;
-                                  }
-                                  if (password.length < 6) {
-                                    showErrorDialog(
-                                        'يجب أن تكون كلمة المرور 6 أحرف على الأقل');
                                     return;
                                   }
                                   // إذا مرّ كل شيء بنجاح، ننادي الـ cubit

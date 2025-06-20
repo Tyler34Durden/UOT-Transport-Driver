@@ -47,12 +47,10 @@ class DriverAuthRepository {
     try {
       final response = await _apiService.putRequest('user', passwordData, token: token);
       logger.i('Password change response: ${response.data}');
-      return response.data;
-    } on DioError catch (e) {
-      logger.e('Error changing password: ${e.message}');
-      throw Exception('Error changing password');
-    }
+    return response.data as Map<String, dynamic>;
+  } catch (e) {
+    print('Error changing password: $e');
+    rethrow;  // <— هنا نعيد رمي الخطأ ليصل إلى الـ Cubit
   }
-
-
+}
 }

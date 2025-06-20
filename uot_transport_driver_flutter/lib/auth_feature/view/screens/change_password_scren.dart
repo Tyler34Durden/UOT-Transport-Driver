@@ -37,12 +37,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Future<void> _changePassword() async {
     if (_newPasswordController.text.trim() !=
         _confirmPasswordController.text.trim()) {
-      showResponseDialog(
-        context,
-        success: false,
-        message: 'كلمة المرور الجديدة غير متطابقة مع التأكيد',
-      );
-      return;
+      // showResponseDialog(
+      //   context,
+      //   success: false,
+      //   message: 'كلمة المرور الجديدة غير متطابقة مع التأكيد',
+      // );
+      // return;
+      
     }
     // تجهيز بيانات الطلب كما هو مطلوب من API
     final passwordData = {
@@ -87,7 +88,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           // اغلاق الديالوج بعد ثانيتين
           Future.delayed(const Duration(seconds: 2))
               .then((_) => Navigator.of(context).pop());
-        } else if (state is DriverAuthFailure) {
+        } else if (state is DriverPasswordChangeFailure) {
           // عرض ديالوج الخطأ
           showDialog(
             context: context,
@@ -99,6 +100,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 size: 50,
               ),
               content: AppText(
+                textAlign: TextAlign.center,
                 lbl: state.error,
                 style: const TextStyle(
                   fontSize: 16,
