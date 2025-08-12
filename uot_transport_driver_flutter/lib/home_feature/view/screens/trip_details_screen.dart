@@ -17,6 +17,8 @@ import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/activ
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/trip_details_cubit.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/trip_details_state.dart';
 
+import '../../../core/core_widgets/dt_loading.dart';
+
 class TripDetailsScreen extends StatefulWidget {
   final int tripId;
   TripDetailsScreen({super.key, required this.tripId});
@@ -56,7 +58,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           body: BlocBuilder<TripDetailsCubit, TripDetailsState>(
             builder: (context, state) {
               if (state is TripDetailsLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: DTLoading(isLoading: true));
               }
               if (state is TripDetailsFailure) {
                 return Center(

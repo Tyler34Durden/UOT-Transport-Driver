@@ -182,6 +182,8 @@ import 'package:uot_transport_driver_flutter/home_feature/view/widgets/inactive_
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/active_trips_cubit.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view_model/cubit/active_trips_state.dart';
 
+import '../../../core/core_widgets/dt_loading.dart';
+
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
@@ -224,7 +226,7 @@ class MainScreen extends StatelessWidget {
                 BlocBuilder<ActiveTripsCubit, ActiveTripsState>(
                   builder: (context, state) {
                     if (state is ActiveTripsLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: DTLoading(isLoading: true));
                     } else if (state is ActiveTripsSuccess) {
                       // فلترة الرحلات النشطة لاستبعاد تلك التي حالتها "completed"
                       final activeTrips = state.trips.where((trip) {
@@ -279,7 +281,7 @@ class MainScreen extends StatelessWidget {
                 BlocBuilder<ActiveTripsCubit, ActiveTripsState>(
                   builder: (context, state) {
                     if (state is ActiveTripsLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: DTLoading(isLoading: true));
                     } else if (state is ActiveTripsSuccess) {
                       // فلترة الرحلات المنتهية (المكتملة)
                       final inactiveTrips = state.trips.where((trip) {

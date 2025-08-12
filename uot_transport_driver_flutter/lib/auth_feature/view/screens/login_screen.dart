@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,6 +9,8 @@ import 'package:uot_transport_driver_flutter/home_feature/view/screens/main_scre
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_cubit.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view_model/cubit/driver_auth_state.dart';
 import 'package:uot_transport_driver_flutter/home_feature/view/widgets/trips_dialog_widget.dart';
+
+import '../../../core/core_widgets/dt_loading.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -196,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: screenHeight * 0.02),
                         SizedBox(height: screenHeight * 0.06),
                         state is DriverAuthLoading
-                            ? const Center(child: CircularProgressIndicator())
+                            ? const Center(child: DTLoading(isLoading: true))
                             : AppButton(
                                 lbl: 'تسجيل الدخول',
                                 width: MediaQuery.of(context).size.width * 0.4,
