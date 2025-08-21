@@ -19,7 +19,6 @@ class DepartureArrivalWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 3) باقي البيانات
     final int maleCount = tripRoute['maleCount'] ?? 100;
     final int femaleCount = tripRoute['femaleCount'] ?? 100;
     final int nextMaleCount = nextTripRoute['maleCount'] ?? 100;
@@ -44,9 +43,7 @@ class DepartureArrivalWidget extends StatelessWidget {
                     const SizedBox(width: 10),
                     Flexible(
                       child: AppText(
-                        lbl: (nextTripRoute['state']?.toString() ==
-                                    'InTransit' &&
-                                nextTripRoute.isNotEmpty)
+                        lbl: (nextTripRoute['state']?.toString() == 'InTransit' && nextTripRoute.isNotEmpty)
                             ? 'الوصول المتوقع: ${nextTripRoute['time']?.toString() ?? ''}  #${nextTripRoute['id'] ?? ''}'
                             : 'الوصول الفعلي: ${tripRoute['time']?.toString() ?? ''}  # ${tripRoute['id'] ?? ''}',
                         style: const TextStyle(
@@ -73,57 +70,55 @@ class DepartureArrivalWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppText(
-                          lbl: 'الحاجزين ',
-                          style: TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AppText(
+                            lbl: 'الحاجزين ',
+                            style: TextStyle(
+                              color: AppColors.primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        SvgPicture.asset(
-                          'assets/icons/maleIcon.svg',
-                          width: 30,
-                          height: 30,
-                        ),
-                        const SizedBox(width: 5),
-                        AppText(
-                          // lbl: '$maleCount',
-                          lbl: (nextTripRoute['state']?.toString() ==
-                                      'InTransit' &&
-                                  nextTripRoute.isNotEmpty)
-                              ? '$nextMaleCount'
-                              : '$maleCount',
-                          style: const TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(width: 5),
+                          SvgPicture.asset(
+                            'assets/icons/maleIcon.svg',
+                            width: 30,
+                            height: 30,
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        SvgPicture.asset(
-                          'assets/icons/femaleIcone.svg',
-                          width: 30,
-                          height: 30,
-                        ),
-                        const SizedBox(width: 5),
-                        AppText(
-                          lbl: (nextTripRoute['state']?.toString() ==
-                                      'InTransit' &&
-                                  nextTripRoute.isNotEmpty)
-                              ? '$nextFemaleCount '
-                              : '$femaleCount',
-                          style: const TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(width: 5),
+                          AppText(
+                            lbl: (nextTripRoute['state']?.toString() == 'InTransit' && nextTripRoute.isNotEmpty)
+                                ? '$nextMaleCount'
+                                : '$maleCount',
+                            style: const TextStyle(
+                              color: AppColors.primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          SvgPicture.asset(
+                            'assets/icons/femaleIcone.svg',
+                            width: 30,
+                            height: 30,
+                          ),
+                          const SizedBox(width: 5),
+                          AppText(
+                            lbl: (nextTripRoute['state']?.toString() == 'InTransit' && nextTripRoute.isNotEmpty)
+                                ? '$nextFemaleCount '
+                                : '$femaleCount',
+                            style: const TextStyle(
+                              color: AppColors.primaryColor,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

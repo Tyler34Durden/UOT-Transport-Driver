@@ -37,19 +37,19 @@ class AppButton extends StatelessWidget {
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          padding: const EdgeInsets.symmetric(horizontal: 8), // Add horizontal padding
         ),
         child: Row(
-          // mainAxisSize: MainAxisSize.min, // يقتصر مساحة الصف على محتوياته
+          mainAxisSize: MainAxisSize.min, // Uncommented to constrain row width
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(
                 icon,
                 color: textColor ?? AppColors.accentColor,
-                size: 30,
+                size: 24, // Slightly smaller icon
               ),
-
-              // const SizedBox(width: 8),
+              const SizedBox(width: 6), // Add spacing between icon and text
             ],
             Flexible(
               child: AppText(
@@ -61,6 +61,7 @@ class AppButton extends StatelessWidget {
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center, // Center the text
               ),
             ),
           ],

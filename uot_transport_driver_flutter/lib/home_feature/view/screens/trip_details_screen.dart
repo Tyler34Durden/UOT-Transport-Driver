@@ -51,149 +51,152 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       value: _tripDetailsCubit,
       child: Directionality(
         textDirection: TextDirection.rtl,
-        child: Scaffold(
-          // appBar: const BackHeader(),
+        child: WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+            // appBar: const BackHeader(),
 
-          backgroundColor: AppColors.backgroundColor,
-          body: BlocBuilder<TripDetailsCubit, TripDetailsState>(
-            builder: (context, state) {
-              if (state is TripDetailsLoading) {
-                return const Center(child: DTLoading(isLoading: true));
-              }
-              if (state is TripDetailsFailure) {
-                return Center(
-                  child: Text('فشل جلب بيانات الرحلة: ${state.error}'),
-                );
-              }
-              if (state is TripDetailsSuccess) {
-                final data = state.tripDetails;
-                final String tripState = data['tripState']?.toString() ?? '';
-                final Map<String, dynamic> tripRoute = data['tripRoute'] ?? {};
-                final Map<String, dynamic> nextTripRoute =
-                    data['nextTripRoute'] ?? {};
-
-                // Optional override first/last from ActiveTripsCubit
-                Map<String, dynamic> firstTripRoute = tripRoute;
-                Map<String, dynamic> lastTripRoute = {};
-                final activeState = context.watch<ActiveTripsCubit>().state;
-                if (activeState is ActiveTripsSuccess) {
-                  final current = activeState.trips.firstWhere(
-                    (t) => t['tripId'].toString() == widget.tripId.toString(),
-                    orElse: () => {},
-                  );
-                  if (current.isNotEmpty) {
-                    firstTripRoute = Map.from(current['firstTripRoute'] ?? {});
-                    lastTripRoute = Map.from(current['lastTripRoute'] ?? {});
-                  }
+            backgroundColor: AppColors.backgroundColor,
+            body: BlocBuilder<TripDetailsCubit, TripDetailsState>(
+              builder: (context, state) {
+                if (state is TripDetailsLoading) {
+                  return const Center(child: DTLoading(isLoading: true));
                 }
+                if (state is TripDetailsFailure) {
+                  return Center(
+                    child: Text('فشل جلب بيانات الرحلة: ${state.error}'),
+                  );
+                }
+                if (state is TripDetailsSuccess) {
+                  final data = state.tripDetails;
+                  final String tripState = data['tripState']?.toString() ?? '';
+                  final Map<String, dynamic> tripRoute = data['tripRoute'] ?? {};
+                  final Map<String, dynamic> nextTripRoute =
+                      data['nextTripRoute'] ?? {};
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    _tripDetailsCubit.fetchTripDetails(widget.tripId);
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 30),
-                          AppText(
-                            lbl: 'رقم الرحلة : # ${widget.tripId}',
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.bold,
+                  // Optional override first/last from ActiveTripsCubit
+                  Map<String, dynamic> firstTripRoute = tripRoute;
+                  Map<String, dynamic> lastTripRoute = {};
+                  final activeState = context.watch<ActiveTripsCubit>().state;
+                  if (activeState is ActiveTripsSuccess) {
+                    final current = activeState.trips.firstWhere(
+                      (t) => t['tripId'].toString() == widget.tripId.toString(),
+                      orElse: () => {},
+                    );
+                    if (current.isNotEmpty) {
+                      firstTripRoute = Map.from(current['firstTripRoute'] ?? {});
+                      lastTripRoute = Map.from(current['lastTripRoute'] ?? {});
+                    }
+                  }
+
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      _tripDetailsCubit.fetchTripDetails(widget.tripId);
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: 30),
+                            AppText(
+                              lbl: 'رقم الرحلة : # ${widget.tripId}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: AppText(
-                                  lbl:
-                                      '${firstTripRoute['stationName'] ?? 'غير متوفر'} \n${firstTripRoute['id'] ?? ''}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.bold,
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: AppText(
+                                    lbl:
+                                        '${firstTripRoute['stationName'] ?? 'غير متوفر'} \n${firstTripRoute['id'] ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 5),
-                              SvgPicture.asset(
-                                'assets/icons/arrow-right-circle.svg',
-                                width: 30,
-                                height: 30,
-                              ),
-                              const SizedBox(width: 5),
-                              Flexible(
-                                child: AppText(
-                                  lbl:
-                                      '${lastTripRoute['stationName'] ?? 'غير متوفر'} \n${lastTripRoute['id'] ?? ''}',
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    color: AppColors.primaryColor,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  // overflow: TextOverflow.visible,
+                                const SizedBox(width: 5),
+                                SvgPicture.asset(
+                                  'assets/icons/arrow-right-circle.svg',
+                                  width: 30,
+                                  height: 30,
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          QRWidget(
-                            tripId: widget.tripId.toString(),
-                            tripRouteId: tripRoute['id']?.toString() ?? '',
-                          ),
-                          const SizedBox(height: 10),
-                          AppText(
-                            lbl: tripState.trim().toLowerCase() == 'completed'
-                                ? 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'
-                                : (nextTripRoute['state'] == 'InTransit'
-                                    ? 'المحطة القادمة: ${nextTripRoute['stationName'] ?? ''} \n # ${nextTripRoute['id'] ?? ''}'
-                                    : 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: AppColors.primaryColor,
-                              fontWeight: FontWeight.bold,
+                                const SizedBox(width: 5),
+                                Flexible(
+                                  child: AppText(
+                                    lbl:
+                                        '${lastTripRoute['stationName'] ?? 'غير متوفر'} \n${lastTripRoute['id'] ?? ''}',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: AppColors.primaryColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    // overflow: TextOverflow.visible,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          DepartureArrivalWidget(
-                            tripRoute: tripRoute,
-                            nextTripRoute: nextTripRoute,
-                          ),
-                          const SizedBox(height: 10),
-                          GoogleMapWidget(
-                            startLocation: tripRoute['location'] ?? '',
-                            endLocation: nextTripRoute['location'] ?? '',
-                          ),
-                          const SizedBox(height: 10),
-                          if (tripState.trim().toLowerCase() == 'completed')
-                            AppButton(
-                              lbl: 'انتهت الرحلة',
-                              color: AppColors.secondaryColor,
-                              textColor: AppColors.primaryColor,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => MainScreen()),
-                                );
-                              },
-                            )
-                          else
-                            buildActionButtons(nextTripRoute, tripRoute),
-                        ],
+                            const SizedBox(height: 10),
+                            QRWidget(
+                              tripId: widget.tripId.toString(),
+                              tripRouteId: tripRoute['id']?.toString() ?? '',
+                            ),
+                            const SizedBox(height: 10),
+                            AppText(
+                              lbl: tripState.trim().toLowerCase() == 'completed'
+                                  ? 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'
+                                  : (nextTripRoute['state'] == 'InTransit'
+                                      ? 'المحطة القادمة: ${nextTripRoute['stationName'] ?? ''} \n # ${nextTripRoute['id'] ?? ''}'
+                                      : 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: AppColors.primaryColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DepartureArrivalWidget(
+                              tripRoute: tripRoute,
+                              nextTripRoute: nextTripRoute,
+                            ),
+                            const SizedBox(height: 10),
+                            GoogleMapWidget(
+                              startLocation: tripRoute['location'] ?? '',
+                              endLocation: nextTripRoute['location'] ?? '',
+                            ),
+                            const SizedBox(height: 10),
+                            if (tripState.trim().toLowerCase() == 'completed')
+                              AppButton(
+                                lbl: 'انتهت الرحلة',
+                                color: AppColors.secondaryColor,
+                                textColor: AppColors.primaryColor,
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => MainScreen()),
+                                  );
+                                },
+                              )
+                            else
+                              buildActionButtons(nextTripRoute, tripRoute),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ),
       ),
@@ -202,32 +205,63 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
   Widget buildActionButtons(
       Map<String, dynamic> nextTripRoute, Map<String, dynamic> tripRoute) {
+    // Get state from tripRoute since nextTripRoute is empty
+    final tripRouteState = tripRoute['state']?.toString() ?? '';
+    final tripRouteStateLower = tripRouteState.trim().toLowerCase();
+
+    // Original code for nextTripRoute (keeping for debugging)
     final rawState = nextTripRoute['state']?.toString() ?? '';
     final state = rawState.trim().toLowerCase();
 
     debugPrint('▶ nextTripRoute.state = $state');
+    debugPrint('▶ Raw nextTripRoute = ${nextTripRoute.toString()}');
+    debugPrint('▶ tripRoute.state = $tripRouteState');
+    debugPrint('▶ Raw tripRoute = ${tripRoute.toString()}');
+
+    // Check both nextTripRoute and tripRoute states
+    final bool isInTransit = state.contains('transit') ||
+                            tripRouteStateLower.contains('transit') ||
+                            tripRouteState == 'InTransit';
+
+    final bool isNotReached = state == 'notreached' ||
+                             rawState == 'NotReached' ||
+                             tripRouteStateLower == 'notreached';
+
+    debugPrint('▶ Is in transit? $isInTransit');
+    debugPrint('▶ Is not reached? $isNotReached');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (state == 'intransit')
+        // Show "I arrived" button if in transit state
+        if (isInTransit)
           AppButton(
             lbl: 'وصلت المحطة',
             color: AppColors.primaryColor,
-            onPressed: () => _onReachedStation(nextTripRoute, tripRoute),
+            onPressed: () => _onReachedStation(nextTripRoute.isEmpty ? tripRoute : nextTripRoute, tripRoute),
           )
-        else if (state == 'notreached')
+        else if (isNotReached)
           AppButton(
             lbl: 'غادرت المحطة',
             color: Colors.green,
-            onPressed: () => _onDepartStation(nextTripRoute),
+            onPressed: () => _onDepartStation(nextTripRoute.isEmpty ? tripRoute : nextTripRoute),
           ),
+        const SizedBox(height: 10),
+        // Always show the trip status for debugging
+        AppText(
+          lbl: 'حالة الرحلة: ${tripRouteState.isNotEmpty ? tripRouteState : rawState}',
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textColor,
+          ),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 10),
         AppButton(
           lbl: 'تأخرت الرحلة',
           color: AppColors.btnColor,
           onPressed: () {
-            _onDelayedStation(nextTripRoute);
+            _onDelayedStation(nextTripRoute.isEmpty ? tripRoute : nextTripRoute);
           },
         ),
       ],
@@ -253,7 +287,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   //           ),
   //         ),
   //         content: AppText(
-  //           lbl: 'سوف تقوم بتحديث حالة الرحلة ، الوصول لمحطة: $stationName.',
+  //           lbl: 'سوف تقوم بتحديث حالة الرحلة ، ا��وصول لمحطة: $stationName.',
   //           style: const TextStyle(fontSize: 20, color: AppColors.textColor),
   //         ),
   //         actions: [
@@ -353,19 +387,67 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     // انتظر ثانيتين ثم اغلق ديالوج النجاح
                     await Future.delayed(const Duration(seconds: 2));
                     Navigator.pop(context);
-                  } catch (_) {
-                    // في حالة الخطأ نعيد عرض رسالة بسيطة
+                  } on DioException catch (e) {
+                    // Close the current dialog first
+                    Navigator.pop(dialogCtx);
+
+                    // Extract error message from response data
+                    final errorData = e.response?.data;
+                    String errorMessage;
+
+                    if (errorData is Map && errorData['message'] != null) {
+                      errorMessage = errorData['message'];
+                    } else if (e.response?.statusCode == 500) {
+                      errorMessage = 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
+                    } else {
+                      // Truncate long error messages for better display
+                      errorMessage = e.toString().length > 100
+                          ? '${e.toString().substring(0, 100)}...'
+                          : e.toString();
+                    }
+
+                    // Show error dialog with proper formatting
                     showDialog(
                       context: context,
                       builder: (_) => TripsDialog(
                         title: Icon(
-                          Icons.error,
+                          Icons.error_outline,
                           color: AppColors.btnColor,
+                          size: 50,
                         ),
-                        content: const AppText(
+                        content: AppText(
+                          textAlign: TextAlign.center,
+                          lbl: errorMessage,
+                          style: const TextStyle(
+                              fontSize: 16, color: AppColors.textColor),
+                        ),
+                        actions: [
+                          AppButton(
+                            onPressed: () => Navigator.pop(context),
+                            lbl: 'حسناً',
+                            height: 50,
+                            width: 200,
+                          )
+                        ],
+                      ),
+                    );
+                  } catch (e) {
+                    // Close the current dialog first
+                    Navigator.pop(dialogCtx);
+
+                    // Show generic error
+                    showDialog(
+                      context: context,
+                      builder: (_) => TripsDialog(
+                        title: Icon(
+                          Icons.error_outline,
+                          color: AppColors.btnColor,
+                          size: 50,
+                        ),
+                        content: AppText(
                           textAlign: TextAlign.center,
                           lbl: 'فشل تحديث الحالة.',
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 16, color: AppColors.textColor),
                         ),
                         actions: [
@@ -562,94 +644,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     );
   }
 
-  // void _onDelayedStation(Map<String, dynamic> nextTripRoute) {
-  //   final stationName = nextTripRoute['stationName'] ?? 'غير متوفر';
-  //   final int? routeId = nextTripRoute['id'] as int?;
-  //   if (routeId == null) return;
-
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: true,
-  //     builder: (ctx) {
-  //       int delay = 0;
-  //       return StatefulBuilder(
-  //         builder: (ctx2, setState) {
-  //           return TripsDialog(
-  //             title: const AppText(
-  //               lbl: 'هل تأخرت ؟',
-  //               style: TextStyle(
-  //                 fontSize: 24,
-  //                 fontWeight: FontWeight.bold,
-  //                 color: AppColors.primaryColor,
-  //               ),
-  //             ),
-  //             content: AppText(
-  //               lbl: 'أدخل دقائق التأخير للمحطة القادمة: $stationName',
-  //               style:
-  //                   const TextStyle(fontSize: 20, color: AppColors.textColor),
-  //             ),
-  //             actions: [
-  //               Row(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   AppButton(
-  //                     icon: Icons.add,
-  //                     onPressed: () => setState(() => delay++),
-  //                     height: 60,
-  //                     width: 80,
-  //                     textColor: AppColors.backgroundColor,
-  //                   ),
-  //                   const SizedBox(width: 10),
-  //                   AppText(
-  //                     lbl: '$delay دقيقة',
-  //                     style: const TextStyle(
-  //                         fontSize: 24, fontWeight: FontWeight.bold),
-  //                   ),
-  //                   const SizedBox(width: 10),
-  //                   AppButton(
-  //                     icon: Icons.remove,
-  //                     onPressed: () => setState(() {
-  //                       if (delay > 0) delay--;
-  //                     }),
-  //                     height: 60,
-  //                     width: 80,
-  //                     color: AppColors.secondaryColor,
-  //                     textColor: AppColors.primaryColor,
-  //                   ),
-  //                 ],
-  //               ),
-  //               const SizedBox(height: 10),
-  //               AppButton(
-  //                 lbl: 'تأكيد',
-  //                 onPressed: () async {
-  //                   try {
-  //                     await TripDetailsRepository().addDelay(routeId, delay);
-  //                     ScaffoldMessenger.of(context).showSnackBar(
-  //                       SnackBar(content: Text('تم إضافة تأخير $delay د')),
-  //                     );
-  //                     Navigator.pop(ctx2);
-  //                     _tripDetailsCubit.fetchTripDetails(widget.tripId);
-  //                   } catch (_) {
-  //                     ScaffoldMessenger.of(context).showSnackBar(
-  //                       const SnackBar(content: Text('فشل إضافة التأخير')),
-  //                     );
-  //                   }
-  //                 },
-  //                 height: 50,
-  //                 width: 400,
-  //               ),
-  //               const SizedBox(height: 10),
-  //               AppButton(
-  //                 lbl: 'إلغاء',
-  //                 onPressed: () => Navigator.pop(ctx2),
-  //                 height: 50,
-  //                 width: 400,
-  //                 color: AppColors.secondaryColor,
-  //                 textColor: AppColors.primaryColor,
-  //               ),
-  //             ],
-  //           );
-
   void _onDelayedStation(Map<String, dynamic> nextTripRoute) {
     final stationName = nextTripRoute['stationName'] ?? 'غير متوفر';
     final int? routeId = nextTripRoute['id'] as int?;
@@ -677,36 +671,43 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     const TextStyle(fontSize: 20, color: AppColors.textColor),
               ),
               actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AppButton(
-                      icon: Icons.add,
-                      onPressed: () => setState(() => delay++),
-                      height: 60,
-                      width: 80,
-                      textColor: AppColors.backgroundColor,
-                    ),
-                    const SizedBox(width: 10),
-                    AppText(
-                      lbl: '$delay دقيقة',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                // Wrap the counter with a SizedBox of fixed width to prevent overflow
+                SizedBox(
+                  width: MediaQuery.of(ctx).size.width * 0.8, // Constrain width
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AppButton(
+                        icon: Icons.add,
+                        onPressed: () => setState(() => delay++),
+                        height: 50, // Slightly smaller height
+                        width: 60, // Narrower width
+                        textColor: AppColors.backgroundColor,
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    AppButton(
-                      icon: Icons.remove,
-                      onPressed: () => setState(() {
-                        if (delay > 0) delay--;
-                      }),
-                      height: 60,
-                      width: 80,
-                      color: AppColors.secondaryColor,
-                      textColor: AppColors.primaryColor,
-                    ),
-                  ],
+                      const SizedBox(width: 8), // Smaller spacing
+                      Flexible(
+                        child: AppText(
+                          lbl: '$delay دقيقة',
+                          style: const TextStyle(
+                            fontSize: 22, // Slightly smaller font
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(width: 8), // Smaller spacing
+                      AppButton(
+                        icon: Icons.remove,
+                        onPressed: () => setState(() {
+                          if (delay > 0) delay--;
+                        }),
+                        height: 50, // Slightly smaller height
+                        width: 60, // Narrower width
+                        color: AppColors.secondaryColor,
+                        textColor: AppColors.primaryColor,
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 AppButton(
@@ -735,20 +736,62 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       );
                       await Future.delayed(const Duration(seconds: 2));
                       Navigator.pop(context);
-                    } catch (_) {
+                    } on DioException catch (e) {
+                      // Close the current dialog first
+                      Navigator.pop(dialogCtx);
+
+                      // Extract error message from response data
+                      final errorData = e.response?.data;
+                      String errorMessage;
+
+                      if (errorData is Map && errorData['message'] != null) {
+                        errorMessage = errorData['message'];
+                      } else {
+                        errorMessage = e.toString().length > 100
+                            ? '${e.toString().substring(0, 100)}...'
+                            : e.toString();
+                      }
+
+                      // Show error dialog with proper formatting
+                      showDialog(
+                        context: context,
+                        builder: (_) => TripsDialog(
+                          title: Icon(
+                            Icons.error_outline,
+                            color: AppColors.btnColor,
+                            size: 50,
+                          ),
+                          content: AppText(
+                            textAlign: TextAlign.center,
+                            lbl: errorMessage,
+                            style: const TextStyle(
+                                fontSize: 16, color: AppColors.textColor),
+                          ),
+                          actions: [
+                            AppButton(
+                              lbl: 'حسناً',
+                              height: 50,
+                              width: 200,
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      );
+                    } catch (e) {
                       Navigator.pop(dialogCtx);
                       // عرض حوار الخطأ
                       showDialog(
                         context: context,
                         builder: (_) => TripsDialog(
                           title: Icon(
-                            Icons.error,
+                            Icons.error_outline,
                             color: AppColors.btnColor,
+                            size: 50,
                           ),
-                          content: const AppText(
+                          content: AppText(
                             textAlign: TextAlign.center,
-                            lbl: 'فشل إضافة التأخير.',
-                            style: TextStyle(
+                            lbl: e.toString(),
+                            style: const TextStyle(
                                 fontSize: 16, color: AppColors.textColor),
                           ),
                           actions: [

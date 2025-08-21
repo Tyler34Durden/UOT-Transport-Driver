@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:dio/dio.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_button.dart';
 import 'package:uot_transport_driver_flutter/auth_feature/view/widgets/app_text.dart';
 import 'package:uot_transport_driver_flutter/core/app_colors.dart';
@@ -125,102 +126,93 @@ class _ActiveTripsWidgetState extends State<ActiveTripsWidget> {
             textColor: txtColor,
             width: 117.5,
             height: 36,
-            // onPressed: () async {
-            //   // عند الضغط على "قيد الانتظار" نجري تحديث الحالة أولاً ثم نعيد بناء الواجهة
-            //   if (_currentTripState == 'soon') {
-            //     final int routeId = widget.firstTripRoute['id'] ?? 0;
-            //     if (routeId != 0) {
-            //       try {
-            //         await TripDetailsRepository()
-            //             .updateTripRouteStatus(routeId, 'Reached');
-            //         // مباشرةً عدّل الحالة محلياً
-            //         setState(() {
-            //           _currentTripState = 'active';
-            //         });
-                    
-            //         ScaffoldMessenger.of(context).showSnackBar(
-            //           const SnackBar(content: Text('تم تحديث الحالة إلى انطلق')),
-            //         );
-            //       } catch (_) {
-            //         ScaffoldMessenger.of(context).showSnackBar(
-            //           const SnackBar(content: Text('فشل تحديث الحالة')),
-            //         );
-            //       }
-            //     }
-            //   }
-            //   // عند الضغط على "انطلق" ننقل المستخدم إلى شاشة التفاصيل
-            //   else if (_currentTripState == 'active') {
-            //     final int id = int.tryParse(widget.tripId) ?? 0;
-            //     Navigator.of(context).push(
-            //       MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
-            //     );
-            //   }
-            // },
             onPressed: () async {
-        if (_currentTripState == 'soon') {
-          final int routeId = widget.firstTripRoute['id'] ?? 0;
-          if (routeId != 0) {
-            try {
-              // حدِّث الحالة على السيرفر
-              await TripDetailsRepository()
-                  .updateTripRouteStatus(routeId, 'Reached');
-              // عدِّل الحالة محلياً
-              setState(() {
-                _currentTripState = 'active';
-              });
-              // عرض حوار النجاح
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (_) => TripsDialog(
-                  title: SvgPicture.asset("assets/icons/check.svg"),
-                  content: const AppText(
-                    lbl: 'تم تحديث الحالة إلى نشطة.',
-                    style: TextStyle(fontSize: 20, color: AppColors.textColor),
-                  ),
-                ),
-              );
-              // انتظر ثم اغلق الحوار
-              await Future.delayed(const Duration(seconds: 2));
-              Navigator.pop(context);
-            } catch (_) {
-              // عرض حوار الخطأ
-              showDialog(
-                context: context,
-                builder: (_) => TripsDialog(
-                  title: const AppText(
-                    lbl: 'فشل العملية',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
-                  ),
-                  content: const AppText(
-                    lbl: 'لم نتمكن من تحديث الحالة، حاول مرة أخرى.',
-                    style: TextStyle(fontSize: 16, color: AppColors.textColor),
-                  ),
-                  actions: [
-                    AppButton(
-                      lbl: 'حسناً',
-                      onPressed: () => Navigator.pop(context),
-                      height: 50,
-                      width: 200,
-                   ),
-              ],
-            ),
-          );
-        }
-      }
-    }
-    else if (_currentTripState == 'active') {
-      final int id = int.tryParse(widget.tripId) ?? 0;
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
-      );
-    }
-  },
-),
+              if (_currentTripState == 'soon') {
+                final int routeId = widget.firstTripRoute['id'] ?? 0;
+                if (routeId != 0) {
+                  try {
+                    await TripDetailsRepository().updateTripRouteStatus(routeId, 'Reached');
+                    setState(() {
+                      _currentTripState = 'active';
+                    });
+                    // Navigate to trip details after successful status update
+                    final int id = int.tryParse(widget.tripId) ?? 0;
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
+                    );
+                  } on DioException catch (e) {
+                    // Handle server errors with specific error messages
+                    final errorData = e.response?.data;
+                    String errorMessage = '';
+
+                    if (errorData is Map && errorData['message'] != null) {
+                      errorMessage = errorData['message'];
+                    } else {
+                      errorMessage = e.toString();
+                    }
+
+                    showDialog(
+                      context: context,
+                      builder: (_) => TripsDialog(
+                        title: Icon(
+                          Icons.error_outline,
+                          color: AppColors.btnColor,
+                          size: 50,
+                        ),
+                        content: AppText(
+                          textAlign: TextAlign.center,
+                          lbl: errorMessage,
+                          style: const TextStyle(fontSize: 16, color: AppColors.textColor),
+                        ),
+                        actions: [
+                          Center(
+                            child: AppButton(
+                              lbl: 'حسناً',
+                              onPressed: () => Navigator.pop(context),
+                              height: 50,
+                              width: 200,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } catch (e) {
+                    // Generic error handling for other exceptions
+                    showDialog(
+                      context: context,
+                      builder: (_) => TripsDialog(
+                        title: Icon(
+                          Icons.error_outline,
+                          color: AppColors.btnColor,
+                          size: 50,
+                        ),
+                        content: AppText(
+                          textAlign: TextAlign.center,
+                          lbl: e.toString(),
+                          style: const TextStyle(fontSize: 16, color: AppColors.textColor),
+                        ),
+                        actions: [
+                          Center(
+                            child: AppButton(
+                              lbl: 'حسناً',
+                              onPressed: () => Navigator.pop(context),
+                              height: 50,
+                              width: 200,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                }
+              } else if (_currentTripState == 'active') {
+                final int id = int.tryParse(widget.tripId) ?? 0;
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
+                );
+              }
+            },
+          ),
         ],
       ),
     );

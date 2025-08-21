@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="uot_transport_driver_flutter"
+        android:label="النقل الطلابي (السائق)"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

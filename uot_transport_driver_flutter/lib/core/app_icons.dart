@@ -37,6 +37,7 @@ class AppIcons {
   static const String transport_logo  = 'assets/images/transport_logo.svg';
   static const String logo  = 'assets/images/logo.png';
   static const String settings  = 'assets/icons/settings.svg';
+  static const String driverLogo = 'assets/icons/logodriver.png';
 
 
 
@@ -80,5 +81,14 @@ class AppIcons {
   static Widget logo_1({double? width, double? height, Color? color}) {
     return SvgPicture.asset(logoPath,
         width: width, height: height, color: color);
+  }
+
+  static Widget driver({double? width, double? height, BoxFit? fit}) {
+    return Image.asset(
+      driverLogo,
+      width: width,
+      height: height,
+      fit: fit,
+    );
   }
 }
