@@ -51,151 +51,155 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       value: _tripDetailsCubit,
       child: Directionality(
         textDirection: TextDirection.rtl,
-        child: WillPopScope(
-          onWillPop: () async => false,
+        child: PopScope(
+          canPop: false,
           child: Scaffold(
             // appBar: const BackHeader(),
 
             backgroundColor: AppColors.backgroundColor,
-            body: BlocBuilder<TripDetailsCubit, TripDetailsState>(
-              builder: (context, state) {
-                if (state is TripDetailsLoading) {
-                  return const Center(child: DTLoading(isLoading: true));
-                }
-                if (state is TripDetailsFailure) {
-                  return Center(
-                    child: Text('فشل جلب بيانات الرحلة: ${state.error}'),
-                  );
-                }
-                if (state is TripDetailsSuccess) {
-                  final data = state.tripDetails;
-                  final String tripState = data['tripState']?.toString() ?? '';
-                  final Map<String, dynamic> tripRoute = data['tripRoute'] ?? {};
-                  final Map<String, dynamic> nextTripRoute =
-                      data['nextTripRoute'] ?? {};
-
-                  // Optional override first/last from ActiveTripsCubit
-                  Map<String, dynamic> firstTripRoute = tripRoute;
-                  Map<String, dynamic> lastTripRoute = {};
-                  final activeState = context.watch<ActiveTripsCubit>().state;
-                  if (activeState is ActiveTripsSuccess) {
-                    final current = activeState.trips.firstWhere(
-                      (t) => t['tripId'].toString() == widget.tripId.toString(),
-                      orElse: () => {},
-                    );
-                    if (current.isNotEmpty) {
-                      firstTripRoute = Map.from(current['firstTripRoute'] ?? {});
-                      lastTripRoute = Map.from(current['lastTripRoute'] ?? {});
-                    }
+            body: SafeArea(
+              top: false,
+              bottom: true,
+              child: BlocBuilder<TripDetailsCubit, TripDetailsState>(
+                builder: (context, state) {
+                  if (state is TripDetailsLoading) {
+                    return const Center(child: DTLoading(isLoading: true));
                   }
+                  if (state is TripDetailsFailure) {
+                    return Center(
+                      child: Text('فشل جلب بيانات الرحلة: ${state.error}'),
+                    );
+                  }
+                  if (state is TripDetailsSuccess) {
+                    final data = state.tripDetails;
+                    final String tripState = data['tripState']?.toString() ?? '';
+                    final Map<String, dynamic> tripRoute = data['tripRoute'] ?? {};
+                    final Map<String, dynamic> nextTripRoute =
+                        data['nextTripRoute'] ?? {};
 
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      _tripDetailsCubit.fetchTripDetails(widget.tripId);
-                    },
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 30),
-                            AppText(
-                              lbl: 'رقم الرحلة : # ${widget.tripId}',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.bold,
+                    // Optional override first/last from ActiveTripsCubit
+                    Map<String, dynamic> firstTripRoute = tripRoute;
+                    Map<String, dynamic> lastTripRoute = {};
+                    final activeState = context.watch<ActiveTripsCubit>().state;
+                    if (activeState is ActiveTripsSuccess) {
+                      final current = activeState.trips.firstWhere(
+                        (t) => t['tripId'].toString() == widget.tripId.toString(),
+                        orElse: () => {},
+                      );
+                      if (current.isNotEmpty) {
+                        firstTripRoute = Map.from(current['firstTripRoute'] ?? {});
+                        lastTripRoute = Map.from(current['lastTripRoute'] ?? {});
+                      }
+                    }
+
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        _tripDetailsCubit.fetchTripDetails(widget.tripId);
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 30),
+                              AppText(
+                                lbl: 'رقم الرحلة : # ${widget.tripId}',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: AppText(
-                                    lbl:
-                                        '${firstTripRoute['stationName'] ?? 'غير متوفر'} \n${firstTripRoute['id'] ?? ''}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: AppColors.primaryColor,
-                                      fontWeight: FontWeight.bold,
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: AppText(
+                                      lbl:
+                                          '${firstTripRoute['stationName'] ?? 'غير متوفر'} \n${firstTripRoute['id'] ?? ''}',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(width: 5),
-                                SvgPicture.asset(
-                                  'assets/icons/arrow-right-circle.svg',
-                                  width: 30,
-                                  height: 30,
-                                ),
-                                const SizedBox(width: 5),
-                                Flexible(
-                                  child: AppText(
-                                    lbl:
-                                        '${lastTripRoute['stationName'] ?? 'غير متوفر'} \n${lastTripRoute['id'] ?? ''}',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: AppColors.primaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    // overflow: TextOverflow.visible,
+                                  const SizedBox(width: 5),
+                                  SvgPicture.asset(
+                                    'assets/icons/arrow-right-circle.svg',
+                                    width: 30,
+                                    height: 30,
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            QRWidget(
-                              tripId: widget.tripId.toString(),
-                              tripRouteId: tripRoute['id']?.toString() ?? '',
-                            ),
-                            const SizedBox(height: 10),
-                            AppText(
-                              lbl: tripState.trim().toLowerCase() == 'completed'
-                                  ? 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'
-                                  : (nextTripRoute['state'] == 'InTransit'
-                                      ? 'المحطة القادمة: ${nextTripRoute['stationName'] ?? ''} \n # ${nextTripRoute['id'] ?? ''}'
-                                      : 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: AppColors.primaryColor,
-                                fontWeight: FontWeight.bold,
+                                  const SizedBox(width: 5),
+                                  Flexible(
+                                    child: AppText(
+                                      lbl:
+                                          '${lastTripRoute['stationName'] ?? 'غير متوفر'} \n${lastTripRoute['id'] ?? ''}',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      // overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            DepartureArrivalWidget(
-                              tripRoute: tripRoute,
-                              nextTripRoute: nextTripRoute,
-                            ),
-                            const SizedBox(height: 10),
-                            GoogleMapWidget(
-                              startLocation: tripRoute['location'] ?? '',
-                              endLocation: nextTripRoute['location'] ?? '',
-                            ),
-                            const SizedBox(height: 10),
-                            if (tripState.trim().toLowerCase() == 'completed')
-                              AppButton(
-                                lbl: 'انتهت الرحلة',
-                                color: AppColors.secondaryColor,
-                                textColor: AppColors.primaryColor,
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => MainScreen()),
-                                  );
-                                },
-                              )
-                            else
-                              buildActionButtons(nextTripRoute, tripRoute),
-                          ],
+                              const SizedBox(height: 10),
+                              QRWidget(
+                                tripId: widget.tripId.toString(),
+                                tripRouteId: tripRoute['id']?.toString() ?? '',
+                              ),
+                              const SizedBox(height: 10),
+                              AppText(
+                                lbl: tripState.trim().toLowerCase() == 'completed'
+                                    ? 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'
+                                    : (nextTripRoute['state'] == 'InTransit'
+                                        ? 'المحطة القادمة: ${nextTripRoute['stationName'] ?? ''} \n # ${nextTripRoute['id'] ?? ''}'
+                                        : 'وصلت محطة: ${tripRoute['stationName'] ?? ''} \n # ${tripRoute['id'] ?? ''}'),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              DepartureArrivalWidget(
+                                tripRoute: tripRoute,
+                                nextTripRoute: nextTripRoute,
+                              ),
+                              const SizedBox(height: 10),
+                              GoogleMapWidget(
+                                startLocation: tripRoute['location'] ?? '',
+                                endLocation: nextTripRoute['location'] ?? '',
+                              ),
+                              const SizedBox(height: 10),
+                              if (tripState.trim().toLowerCase() == 'completed')
+                                AppButton(
+                                  lbl: 'انتهت الرحلة',
+                                  color: AppColors.secondaryColor,
+                                  textColor: AppColors.primaryColor,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => MainScreen()),
+                                    );
+                                  },
+                                )
+                              else
+                                buildActionButtons(nextTripRoute, tripRoute),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
           ),
         ),
