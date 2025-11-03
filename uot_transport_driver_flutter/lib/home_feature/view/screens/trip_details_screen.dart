@@ -30,7 +30,6 @@ class TripDetailsScreen extends StatefulWidget {
 
 class _TripDetailsScreenState extends State<TripDetailsScreen> {
   late TripDetailsCubit _tripDetailsCubit;
-  // bool _hasDeparted = false;
 
   @override
   void initState() {
@@ -54,8 +53,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
         child: PopScope(
           canPop: false,
           child: Scaffold(
-            // appBar: const BackHeader(),
-
             backgroundColor: AppColors.backgroundColor,
             body: SafeArea(
               top: false,
@@ -91,6 +88,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         lastTripRoute = Map.from(current['lastTripRoute'] ?? {});
                       }
                     }
+
+                    // make sure we don't repeatedly fetch in build
+                    // _tripDetailsCubit.fetchTripDetails(widget.tripId);
 
                     return RefreshIndicator(
                       onRefresh: () async {
@@ -142,7 +142,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                         color: AppColors.primaryColor,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                      // overflow: TextOverflow.visible,
                                     ),
                                   ),
                                 ],
@@ -209,30 +208,18 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
 
   Widget buildActionButtons(
       Map<String, dynamic> nextTripRoute, Map<String, dynamic> tripRoute) {
-    // Get state from tripRoute since nextTripRoute is empty
     final tripRouteState = tripRoute['state']?.toString() ?? '';
     final tripRouteStateLower = tripRouteState.trim().toLowerCase();
-
-    // Original code for nextTripRoute (keeping for debugging)
     final rawState = nextTripRoute['state']?.toString() ?? '';
     final state = rawState.trim().toLowerCase();
 
-    debugPrint('▶ nextTripRoute.state = $state');
-    debugPrint('▶ Raw nextTripRoute = ${nextTripRoute.toString()}');
-    debugPrint('▶ tripRoute.state = $tripRouteState');
-    debugPrint('▶ Raw tripRoute = ${tripRoute.toString()}');
-
-    // Check both nextTripRoute and tripRoute states
     final bool isInTransit = state.contains('transit') ||
-                            tripRouteStateLower.contains('transit') ||
-                            tripRouteState == 'InTransit';
+        tripRouteStateLower.contains('transit') ||
+        tripRouteState == 'InTransit';
 
     final bool isNotReached = state == 'notreached' ||
-                             rawState == 'NotReached' ||
-                             tripRouteStateLower == 'notreached';
-
-    debugPrint('▶ Is in transit? $isInTransit');
-    debugPrint('▶ Is not reached? $isNotReached');
+        rawState == 'NotReached' ||
+        tripRouteStateLower == 'notreached';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -242,13 +229,15 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           AppButton(
             lbl: 'وصلت المحطة',
             color: AppColors.primaryColor,
-            onPressed: () => _onReachedStation(nextTripRoute.isEmpty ? tripRoute : nextTripRoute, tripRoute),
+            onPressed: () => _onReachedStation(
+                nextTripRoute.isEmpty ? tripRoute : nextTripRoute, tripRoute),
           )
         else if (isNotReached)
           AppButton(
             lbl: 'غادرت المحطة',
             color: Colors.green,
-            onPressed: () => _onDepartStation(nextTripRoute.isEmpty ? tripRoute : nextTripRoute),
+            onPressed: () => _onDepartStation(
+                nextTripRoute.isEmpty ? tripRoute : nextTripRoute),
           ),
         const SizedBox(height: 10),
         // Always show the trip status for debugging
@@ -271,67 +260,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
       ],
     );
   }
-
-  // void _onReachedStation(
-  //     Map<String, dynamic> nextTripRoute, Map<String, dynamic> tripRoute) {
-  //   final stationName = nextTripRoute['stationName'] ?? 'غير متوفر';
-  //   final int? routeId = nextTripRoute['id'] as int?;
-
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: true,
-  //     builder: (BuildContext dialogCtx) {
-  //       return TripsDialog(
-  //         title: const AppText(
-  //           lbl: 'هل وصلت محطة؟',
-  //           style: TextStyle(
-  //             fontSize: 24,
-  //             fontWeight: FontWeight.bold,
-  //             color: AppColors.primaryColor,
-  //           ),
-  //         ),
-  //         content: AppText(
-  //           lbl: 'سوف تقوم بتحديث حالة الرحلة ، ا��وصول لمحطة: $stationName.',
-  //           style: const TextStyle(fontSize: 20, color: AppColors.textColor),
-  //         ),
-  //         actions: [
-  //           AppButton(
-  //             onPressed: () async {
-  //               if (routeId != null) {
-  //                 try {
-  //                   await TripDetailsRepository()
-  //                       .updateTripRouteStatus(routeId, 'Reached');
-  //                   // ScaffoldMessenger.of(context).showSnackBar(
-  //                   //   const SnackBar(content: Text('تم التحديث إلى Reached')),
-  //                   // );
-  //                   Navigator.pop(dialogCtx);
-  //                   _tripDetailsCubit.fetchTripDetails(widget.tripId);
-
-  //                 } catch (_) {
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     const SnackBar(content: Text('فشل التحديث')),
-  //                   );
-  //                 }
-  //               }
-  //             },
-  //             lbl: 'وصلت',
-  //             height: 50,
-  //             width: 400,
-  //           ),
-  //           const SizedBox(height: 10),
-  //           AppButton(
-  //             onPressed: () => Navigator.pop(dialogCtx),
-  //             lbl: 'إلغاء',
-  //             height: 50,
-  //             width: 400,
-  //             color: AppColors.secondaryColor,
-  //             textColor: AppColors.primaryColor,
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
   void _onReachedStation(
     Map<String, dynamic> nextTripRoute,
@@ -365,13 +293,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     await TripDetailsRepository()
                         .updateTripRouteStatus(routeId, 'Reached');
 
-                    // اغلاق الديالوج الحالي
                     Navigator.pop(dialogCtx);
-
-                    // إعادة جلب البيانات
                     _tripDetailsCubit.fetchTripDetails(widget.tripId);
 
-                    // عرض ديالوج النجاح
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -388,14 +312,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       },
                     );
 
-                    // انتظر ثانيتين ثم اغلق ديالوج النجاح
                     await Future.delayed(const Duration(seconds: 2));
                     Navigator.pop(context);
                   } on DioException catch (e) {
-                    // Close the current dialog first
                     Navigator.pop(dialogCtx);
 
-                    // Extract error message from response data
                     final errorData = e.response?.data;
                     String errorMessage;
 
@@ -404,13 +325,11 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     } else if (e.response?.statusCode == 500) {
                       errorMessage = 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
                     } else {
-                      // Truncate long error messages for better display
                       errorMessage = e.toString().length > 100
                           ? '${e.toString().substring(0, 100)}...'
                           : e.toString();
                     }
 
-                    // Show error dialog with proper formatting
                     showDialog(
                       context: context,
                       builder: (_) => TripsDialog(
@@ -436,10 +355,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       ),
                     );
                   } catch (e) {
-                    // Close the current dialog first
                     Navigator.pop(dialogCtx);
 
-                    // Show generic error
                     showDialog(
                       context: context,
                       builder: (_) => TripsDialog(
@@ -486,69 +403,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     );
   }
 
-  // void _onDepartStation(Map<String, dynamic> nextTripRoute) {
-  //   final stationName = nextTripRoute['stationName'] ?? 'غير متوفر';
-  //   final int? routeId = nextTripRoute['id'] as int?;
-
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: true,
-  //     builder: (BuildContext dialogCtx) {
-  //       return TripsDialog(
-  //         title: const AppText(
-  //           lbl: 'هل تريد اكمال الرحلة ؟',
-  //           style: TextStyle(
-  //             fontSize: 24,
-  //             fontWeight: FontWeight.bold,
-  //             color: AppColors.primaryColor,
-  //           ),
-  //         ),
-  //         content: AppText(
-  //           lbl:
-  //               'سوف تقوم بمغادرة المحطة والإنطلاق للمحطة القادمة: $stationName',
-  //           style: const TextStyle(
-  //             fontSize: 20,
-  //             color: AppColors.textColor,
-  //           ),
-  //         ),
-  //         actions: [
-  //           AppButton(
-  //             onPressed: () async {
-  //               if (routeId != null) {
-  //                 try {
-  //                   await TripDetailsRepository()
-  //                       .updateTripRouteStatus(routeId, 'InTransit');
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     const SnackBar(content: Text('تم تحديث إلى InTransit')),
-  //                   );
-  //                   Navigator.pop(dialogCtx);
-  //                   _tripDetailsCubit.fetchTripDetails(widget.tripId);
-  //                 } catch (_) {
-  //                   ScaffoldMessenger.of(context).showSnackBar(
-  //                     const SnackBar(content: Text('فشل التحديث')),
-  //                   );
-  //                 }
-  //               }
-  //             },
-  //             lbl: 'إنطلق',
-  //             height: 50,
-  //             width: 400,
-  //           ),
-  //           const SizedBox(height: 10),
-  //           AppButton(
-  //             onPressed: () => Navigator.pop(dialogCtx),
-  //             lbl: 'إلغاء',
-  //             height: 50,
-  //             width: 400,
-  //             color: AppColors.secondaryColor,
-  //             textColor: AppColors.primaryColor,
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _onDepartStation(Map<String, dynamic> nextTripRoute) {
     final stationName = nextTripRoute['stationName'] ?? 'غير متوفر';
     final int? routeId = nextTripRoute['id'] as int?;
@@ -581,11 +435,8 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                   try {
                     await TripDetailsRepository()
                         .updateTripRouteStatus(routeId, 'InTransit');
-                    // اغلاق حوار التأكيد
                     Navigator.pop(dialogCtx);
-                    // تحديث البيانات
                     _tripDetailsCubit.fetchTripDetails(widget.tripId);
-                    // عرض حوار النجاح
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -601,11 +452,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         );
                       },
                     );
-                    // إغلاق حوار النجاح بعد ثانيتين
                     await Future.delayed(const Duration(seconds: 2));
                     Navigator.pop(context);
                   } catch (_) {
-                    // عرض حوار الخطأ
                     showDialog(
                       context: context,
                       builder: (_) => TripsDialog(
@@ -671,42 +520,40 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
               ),
               content: AppText(
                 lbl: 'أدخل دقائق التأخير للمحطة القادمة: $stationName',
-                style:
-                    const TextStyle(fontSize: 20, color: AppColors.textColor),
+                style: const TextStyle(fontSize: 20, color: AppColors.textColor),
               ),
               actions: [
-                // Wrap the counter with a SizedBox of fixed width to prevent overflow
                 SizedBox(
-                  width: MediaQuery.of(ctx).size.width * 0.8, // Constrain width
+                  width: MediaQuery.of(ctx).size.width * 0.8,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       AppButton(
                         icon: Icons.add,
                         onPressed: () => setState(() => delay++),
-                        height: 50, // Slightly smaller height
-                        width: 60, // Narrower width
+                        height: 50,
+                        width: 60,
                         textColor: AppColors.backgroundColor,
                       ),
-                      const SizedBox(width: 8), // Smaller spacing
+                      const SizedBox(width: 8),
                       Flexible(
                         child: AppText(
                           lbl: '$delay دقيقة',
                           style: const TextStyle(
-                            fontSize: 22, // Slightly smaller font
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(width: 8), // Smaller spacing
+                      const SizedBox(width: 8),
                       AppButton(
                         icon: Icons.remove,
                         onPressed: () => setState(() {
                           if (delay > 0) delay--;
                         }),
-                        height: 50, // Slightly smaller height
-                        width: 60, // Narrower width
+                        height: 50,
+                        width: 60,
                         color: AppColors.secondaryColor,
                         textColor: AppColors.primaryColor,
                       ),
@@ -724,7 +571,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       Navigator.pop(dialogCtx);
                       _tripDetailsCubit.fetchTripDetails(widget.tripId);
 
-                      // عرض حوار النجاح
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -741,29 +587,27 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                       await Future.delayed(const Duration(seconds: 2));
                       Navigator.pop(context);
                     } on DioException catch (e) {
-                      // Close the current dialog first
                       Navigator.pop(dialogCtx);
 
-                      // Extract error message from response data
                       final errorData = e.response?.data;
                       String errorMessage;
 
                       if (errorData is Map && errorData['message'] != null) {
                         errorMessage = errorData['message'];
+                      } else if (e.response?.statusCode == 500) {
+                        errorMessage = 'حدث خطأ في الخادم، يرجى المحاولة لاحقاً';
                       } else {
                         errorMessage = e.toString().length > 100
                             ? '${e.toString().substring(0, 100)}...'
                             : e.toString();
                       }
 
-                      // Show error dialog with proper formatting
                       showDialog(
                         context: context,
                         builder: (_) => TripsDialog(
                           title: Icon(
-                            Icons.error_outline,
+                            Icons.error,
                             color: AppColors.btnColor,
-                            size: 50,
                           ),
                           content: AppText(
                             textAlign: TextAlign.center,
@@ -781,21 +625,20 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                           ],
                         ),
                       );
-                    } catch (e) {
+                    } catch (_) {
                       Navigator.pop(dialogCtx);
-                      // عرض حوار الخطأ
+
                       showDialog(
                         context: context,
                         builder: (_) => TripsDialog(
                           title: Icon(
-                            Icons.error_outline,
+                            Icons.error,
                             color: AppColors.btnColor,
-                            size: 50,
                           ),
-                          content: AppText(
+                          content: const AppText(
                             textAlign: TextAlign.center,
-                            lbl: e.toString(),
-                            style: const TextStyle(
+                            lbl: 'فشل إضافة التأخير.',
+                            style: TextStyle(
                                 fontSize: 16, color: AppColors.textColor),
                           ),
                           actions: [
